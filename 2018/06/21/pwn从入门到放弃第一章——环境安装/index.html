@@ -14,10 +14,12 @@
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 https://images.offensive-security.com/virtual-images/kali-linux-2017.1-vm-amd64.7z 第二">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-21T09:45:47.133Z">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png">
+<meta property="og:updated_time" content="2018-06-21T11:35:34.422Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pwn从入门到放弃第一章——环境安装">
 <meta name="twitter:description" content="做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 https://images.offensive-security.com/virtual-images/kali-linux-2017.1-vm-amd64.7z 第二">
+<meta name="twitter:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png">
   
     <link rel="alternate" href="/atom.xml" title="PWN? PWN!" type="application/atom+xml">
   
@@ -101,10 +103,14 @@
 <p>然后进入编辑界面，按一下i，输入或者粘贴下面的内容 (在kali下面粘帖是按ctrl+shift+v)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br></pre></td></tr></table></figure></p>
 <p>输入完之后，按下esc，输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:wq</span><br></pre></td></tr></table></figure></p>
 <p>如下图</p>
-
+<p><img src="/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png" alt=""></p>
 <p>然后按下回车，就会退出</p>
 <p>这里解释下为什么要干这一步，看不懂可以暂时跳过<br>kali的官方源会把libc更新到2.27，但是我们平时做题一般都是用Libc 2.24，如果更新到2.27 就不能正常的做某些题目，所以这里是把源换成163的debian源</p>
-
+<h4 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h4><p>在terminal里面继续输入命令, 安装 pwntools</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pwntools</span><br></pre></td></tr></table></figure>
+<h4 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h4><p>安装pwndbg</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
+<h3 id="到这里，一个正常做pwn的环境已经正常搭建好了"><a href="#到这里，一个正常做pwn的环境已经正常搭建好了" class="headerlink" title="到这里，一个正常做pwn的环境已经正常搭建好了"></a>到这里，一个正常做pwn的环境已经正常搭建好了</h3>
       
     </div>
     <footer class="article-footer">
