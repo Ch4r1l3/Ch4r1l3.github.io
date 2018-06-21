@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>pwn从入门到放弃第一章——环境安装 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="pwn从入门到放弃第一章——环境安装做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 https://images.offensive-security.com/virtual-images/kali-linux-201">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn从入门到放弃第一章——环境安装">
+<meta property="og:url" content="http://yoursite.com/2018/06/21/pwn从入门到放弃第一章——环境安装/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="pwn从入门到放弃第一章——环境安装做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 https://images.offensive-security.com/virtual-images/kali-linux-201">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-21T09:28:42.742Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pwn从入门到放弃第一章——环境安装">
+<meta name="twitter:description" content="pwn从入门到放弃第一章——环境安装做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 https://images.offensive-security.com/virtual-images/kali-linux-201">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pwn从入门到放弃第一章——环境安装" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/21/pwn从入门到放弃第一章——环境安装/" class="article-date">
+  <time datetime="2018-06-21T09:27:33.000Z" itemprop="datePublished">2018-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      pwn从入门到放弃第一章——环境安装
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="pwn从入门到放弃第一章——环境安装"><a href="#pwn从入门到放弃第一章——环境安装" class="headerlink" title="pwn从入门到放弃第一章——环境安装"></a>pwn从入门到放弃第一章——环境安装</h2><p>做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装</p>
+<h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错</p>
+<p>这里是下载地址</p>
+<p><a href="https://images.offensive-security.com/virtual-images/kali-linux-2017.1-vm-amd64.7z" target="_blank" rel="noopener">https://images.offensive-security.com/virtual-images/kali-linux-2017.1-vm-amd64.7z</a></p>
+<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>下载完之后，解压镜像到一个文件夹</p>
+<p>然后导入到vmware里面</p>
+<h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>运行kali</p>
+<p>默认帐号密码是<br>root<br>toor</p>
+<p>接着打开terminal</p>
+<p>输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>接着输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/apt/sources.list</span><br></pre></td></tr></table></figure></p>
+<p>然后进入编辑界面，按一下i，输入或者粘贴下面的内容 (在kali下面粘帖是按ctrl+shift+v)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br></pre></td></tr></table></figure></p>
+<p>输入完之后，按下esc，输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:wq</span><br></pre></td></tr></table></figure></p>
+<p>如下图</p>
+<p>然后按下回车，就会退出</p>
+<p>这里解释下为什么要干这一步，看不懂可以暂时跳过，kali的官方源会把libc更新到2.27，但是我们平时做题一般都是用Libc 2.24，如果更新到2.27 就不能正常的做某些题目，所以这里是把源换成163的debian源</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/06/21/pwn从入门到放弃第一章——环境安装/" data-id="cjiocgxfa0001kku5hssmu8a0" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/21/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/06/21/pwn从入门到放弃第一章——环境安装/">pwn从入门到放弃第一章——环境安装</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/21/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
