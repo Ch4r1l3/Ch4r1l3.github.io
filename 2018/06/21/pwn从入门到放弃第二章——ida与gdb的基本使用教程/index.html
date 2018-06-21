@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>pwn从入门到放弃第二章——ida与gdb的基本使用教程 | PWN? PWN!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn从入门到放弃第二章——ida与gdb的基本使用教程">
+<meta property="og:url" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida与gdb的基本使用教程/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-21T12:32:30.035Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pwn从入门到放弃第二章——ida与gdb的基本使用教程">
+<meta name="twitter:description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+  
+    <link rel="alternate" href="/atom.xml" title="PWN? PWN!" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">PWN? PWN!</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://charlieleex.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pwn从入门到放弃第二章——ida与gdb的基本使用教程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/21/pwn从入门到放弃第二章——ida与gdb的基本使用教程/" class="article-date">
+  <time datetime="2018-06-21T11:56:35.000Z" itemprop="datePublished">2018-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      pwn从入门到放弃第二章——ida与gdb的基本使用教程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法"><a href="#其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法" class="headerlink" title="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法"></a>其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法</h4><h4 id="这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………"><a href="#这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………" class="headerlink" title="这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了……….."></a>这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..</h4><h2 id="ida的使用"><a href="#ida的使用" class="headerlink" title="ida的使用"></a>ida的使用</h2><p>首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好</p>
+<p><a href="https://www.52pojie.cn/thread-675251-1-1.html" target="_blank" rel="noopener">https://www.52pojie.cn/thread-675251-1-1.html</a></p>
+<p>貌似只有百度云了，凑合着下吧…….</p>
+<p>这里给一个比赛的二进制文件，用来作为教程的例子</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida与gdb的基本使用教程/" data-id="cjioj1flq0001l4u5aceq6qky" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/21/pwn从入门到放弃第一章——环境安装/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">pwn从入门到放弃第一章——环境安装</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/06/21/pwn从入门到放弃第二章——ida与gdb的基本使用教程/">pwn从入门到放弃第二章——ida与gdb的基本使用教程</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/21/pwn从入门到放弃第一章——环境安装/">pwn从入门到放弃第一章——环境安装</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Charlie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
