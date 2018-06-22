@@ -25,7 +25,13 @@
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t9.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t10.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t11.png">
-<meta property="og:updated_time" content="2018-06-22T00:16:18.825Z">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t12.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t13.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t14.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t15.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t16.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t17.png">
+<meta property="og:updated_time" content="2018-06-22T01:26:34.950Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pwn从入门到放弃第二章——ida的基本使用教程">
 <meta name="twitter:description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
@@ -145,8 +151,36 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">read(0,&amp;s,0x100);</span><br></pre></td></tr></table></figure>
 <p>s只有0x88字节大小，但是却往里面读进去0x100字节大小的数据，这里就会导致缓冲区溢出</p>
 <p>简单的从ida静态分析，我们就可以看出程序的漏洞在哪里</p>
-<h4 id="下面，我们来了解一下交叉引用和搜索"><a href="#下面，我们来了解一下交叉引用和搜索" class="headerlink" title="下面，我们来了解一下交叉引用和搜索"></a>下面，我们来了解一下交叉引用和搜索</h4><p>双击下左边的puts，下图红框框着的地方</p>
+<h4 id="下面，我们来了解一下交叉引用和搜索"><a href="#下面，我们来了解一下交叉引用和搜索" class="headerlink" title="下面，我们来了解一下交叉引用和搜索"></a>下面，我们来了解一下交叉引用和搜索</h4><p>按下Tab，让右边的界面变成顺序的汇编代码，双击下左边的puts，下图红框框着的地方</p>
 <p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t11.png" alt=""></p>
+<p>然后右边就会显示</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t12.png" alt=""></p>
+<p>红框框着的地方就是交叉引用了</p>
+<p>这里就显示了puts这个库函数被什么调用了</p>
+<p>我们可以双击 main+E1</p>
+<p>然后我们就看到</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t13.png" alt=""></p>
+<p>跳到main函数调用puts的地方了，再按下Tab</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t14.png" alt=""></p>
+<p>我们看到原来是case2 中调用了puts</p>
+<p>那这个交叉引用在分析程序中有什么用呢？下面简单说下</p>
+<p>假如要分析的程序非常大，有很多函数，很难一个个分析过来，这个时候看到它调用了库函数system</p>
+<p>我们就可以靠交叉引用来找出哪一部分调用了system，再进行重点的分析</p>
+<p>但是，有时候交叉引用显示的数量太少，我们有两个办法</p>
+<ol>
+<li>选择上面的Options-&gt;General-&gt;Cross-references</li>
+</ol>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t15.png" alt=""></p>
+<p>改红框里面的数字就能更改显示的reference数量</p>
+<ol start="2">
+<li>直接进行搜索</li>
+</ol>
+<p>按下快捷键Alt+T，会弹出如下图的搜索框</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t16.png" alt=""></p>
+<p>如果要不选红框那里的话，会搜索光标以下的代码，如果选了红框，会搜索整个二进制</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t17.png" alt=""></p>
+<p>不过这里搜索的结果有点多，要自己肉眼过滤一波</p>
+<p>这里只是简单介绍了一下ida的使用，更详细的可以上网搜索《IDA.Pro权威指南》这本书，里面有各种ida的使用技巧</p>
 
       
     </div>
