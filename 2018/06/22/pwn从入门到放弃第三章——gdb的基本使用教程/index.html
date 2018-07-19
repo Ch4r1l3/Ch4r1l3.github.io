@@ -7,17 +7,38 @@
   
   <title>pwn从入门到放弃第三章——gdb的基本使用教程 | PWN? PWN!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="这里只是开个坑……后面有空再填……">
+  <meta name="description" content="考完试了，来填坑 gdb在做题中经常用到，熟练掌握gdb会事半功倍 我们继续用第二章中的程序来讲解gdb的使用 将程序直接拖进vmware中，因为我们下的vmware专用版本的kali，所以已经安装好vmware tool之类的，直接拖进去或者复制粘贴进去就可以了 打开terminal，cd到Desktop 先给程序加可执行权限，在terminal输入 1chmod 777 babystack 然">
 <meta property="og:type" content="article">
 <meta property="og:title" content="pwn从入门到放弃第三章——gdb的基本使用教程">
 <meta property="og:url" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="这里只是开个坑……后面有空再填……">
+<meta property="og:description" content="考完试了，来填坑 gdb在做题中经常用到，熟练掌握gdb会事半功倍 我们继续用第二章中的程序来讲解gdb的使用 将程序直接拖进vmware中，因为我们下的vmware专用版本的kali，所以已经安装好vmware tool之类的，直接拖进去或者复制粘贴进去就可以了 打开terminal，cd到Desktop 先给程序加可执行权限，在terminal输入 1chmod 777 babystack 然">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-22T01:33:21.902Z">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t2.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t3.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t4.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t5.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t6.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t7.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t8.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t9.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t10.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t11.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t12.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t13.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t14.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t15.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t16.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t17.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t18.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t19.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t20.png">
+<meta property="og:updated_time" content="2018-07-19T04:51:50.461Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pwn从入门到放弃第三章——gdb的基本使用教程">
-<meta name="twitter:description" content="这里只是开个坑……后面有空再填……">
+<meta name="twitter:description" content="考完试了，来填坑 gdb在做题中经常用到，熟练掌握gdb会事半功倍 我们继续用第二章中的程序来讲解gdb的使用 将程序直接拖进vmware中，因为我们下的vmware专用版本的kali，所以已经安装好vmware tool之类的，直接拖进去或者复制粘贴进去就可以了 打开terminal，cd到Desktop 先给程序加可执行权限，在terminal输入 1chmod 777 babystack 然">
+<meta name="twitter:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t1.png">
   
     <link rel="alternate" href="/atom.xml" title="PWN? PWN!" type="application/atom+xml">
   
@@ -86,12 +107,126 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>这里只是开个坑……后面有空再填……</p>
+        <p>考完试了，来填坑</p>
+<p>gdb在做题中经常用到，熟练掌握gdb会事半功倍</p>
+<p>我们继续用第二章中的程序来讲解gdb的使用</p>
+<p>将程序直接拖进vmware中，因为我们下的vmware专用版本的kali，所以已经安装好vmware tool之类的，直接拖进去或者复制粘贴进去就可以了</p>
+<p>打开terminal，cd到Desktop</p>
+<p>先给程序加可执行权限，在terminal输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 babystack</span><br></pre></td></tr></table></figure>
+<p>然后输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb ./babystack</span><br></pre></td></tr></table></figure></p>
+<p>然后就会出现如下图一样的界面</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t1.png" alt=""></p>
+<p>接下面介绍gdb比较实用的两个功能</p>
+<h4 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h4><p>在gdb的termial中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">checksec</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t2.png" alt=""></p>
+<p>checksec是用来显示程序保护机制的开启情况</p>
+<p>我们来解释下显示的东西</p>
+<ul>
+<li>Arch，很明显就是程序是多少位的，这里是64位的</li>
+<li>RELRO，这里是Full RELRO，RELRO的全程是RELocation Read-Only，重定位只读（渣翻译不要吐槽，开启了这个之后got表是只读的，不能往里面写东西，got表这个概念会在后面介绍，这里先知道这个名词就可以了，除此之外还有其他东西改变了，深入下去可以完全当一章来写</li>
+<li>Stack: 这里是栈溢出保护，保护的机制也暂时先不谈</li>
+<li>NX： 这里是堆栈不可执行，也就是堆和栈没有执行权限，这个也会在后面ret2shellcode那章解释</li>
+<li>PIE：地址重定位，开启了PIE和没有开启PIE是两种不同的难度，而且开启了PIE会使程序调试起来比较麻烦</li>
+</ul>
+<h4 id="vmmap"><a href="#vmmap" class="headerlink" title="vmmap"></a>vmmap</h4><p>vmmap是用来查看程序各种段的地址和范围的，会经常用到</p>
+<p>在gdb的terminal中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vmmap</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t3.png" alt=""></p>
+<p>然后就会提示这个….好吧，我们再输入r，运行程序，r是run的缩写</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t4.png" alt=""></p>
+<p>之后按下ctrl+c</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t5.png" alt=""></p>
+<p>就会出现这个界面，不用担心，这个是正常的，gdb接收到信号，让程序停在那里而已，这个时候再输入vmmap</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t6.png" alt=""></p>
+<p>我们来解释下怎么看显示的东西</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t7.png" alt=""></p>
+<p>这里显示说明了哪个颜色是哪个段的，为了让没学过操作系统的也明白，我简单解释下各个名词</p>
+<ul>
+<li>STACK：栈，用来保存函数运行时的临时变量等</li>
+<li>HEAP：堆，一般是主动编写代码来分配和回收堆内存</li>
+<li>CODE: 代码段，是用来存放代码的</li>
+<li>DATA：数据段，一般用来存放全局变量</li>
+</ul>
+<p>除此之外还有白色的，一般是用来存放各种不可修改的数据的，如这里的0x600000  -  0x601000，是用来存放程序的静态变量，大部分是各种字符串</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t8.png" alt=""></p>
+<p>这里是各个段的开始和结束位置</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t9.png" alt=""></p>
+<p>这里是各个段的权限</p>
+<ul>
+<li>r 可读</li>
+<li>w 可写</li>
+<li>x 可执行</li>
+</ul>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t10.png" alt=""></p>
+<p>这里是各个段的来源或者标识，例如前三个段就来自babystack，[stack] 就说明这是栈</p>
+<h4 id="下面来介绍下gdb的基本操作"><a href="#下面来介绍下gdb的基本操作" class="headerlink" title="下面来介绍下gdb的基本操作"></a>下面来介绍下gdb的基本操作</h4><ul>
+<li>r = run 运行程序，如果你当前已经在运行程序了，再输入r会重新运行程序</li>
+<li>b =  break    下断点，在调试pwn中，一般是 b<em> 0xabcde ，abcde是在ida中看到的地址,如b</em> 0x400908</li>
+<li>c =  continue   继续运行程序直到停在下一个断点</li>
+<li>n =  next  下一行，一般装了pwndbg之后下一行指的是下一条汇编，但是如果调试的程序是带调试信息的，一般会跳几行汇编</li>
+<li>ni = nexti  下一条指令，这个就是真正的下一条汇编指令</li>
+<li>s = step 继续运行程序直到跳到不同的函数，一般是调用call之后会停在call那个函数的开始位置</li>
+<li>d = delete 删除断点，后面可带数字，说明删除第几个断点，如果不带参数，说明删除全部断点</li>
+<li>x  查看内存</li>
+</ul>
+<p>这些指令的具体用法都可以用help来查看，如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">help x</span><br></pre></td></tr></table></figure></p>
+<p>而且一般c,n,ni这几个程序都可以带一个数字，用来代表连续运行这个指令多少次，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ni 10</span><br></pre></td></tr></table></figure>
+<p>就代表下10行指令</p>
+<h4 id="其中x的用法要熟练掌握！"><a href="#其中x的用法要熟练掌握！" class="headerlink" title="其中x的用法要熟练掌握！"></a>其中x的用法要熟练掌握！</h4><p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t11.png" alt=""></p>
+<p>我们用help来查看x的用法，基本的格式是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/格式  地址</span><br></pre></td></tr></table></figure>
+<p>如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/10xw 0x601020</span><br></pre></td></tr></table></figure></p>
+<p>这里就代表以16进制的格式显示0x601020开始的10个字，这里的字是4个字节</p>
+<p>运行的结果</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t12.png" alt=""></p>
+<p>还有一个例子就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s/10s 0x400ABD</span><br></pre></td></tr></table></figure>
+<p>这里是显示从0x400ABD开始的10条字符串</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t13.png" alt=""></p>
+<p>这里还要介绍一个就是，在调试32位和64位的程序的时候，要用不同的大小，在64位程序上一般用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/40xg 0x601020</span><br></pre></td></tr></table></figure>
+<p>而在32位程序上一般是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/40xw 0x601020</span><br></pre></td></tr></table></figure>
+<p>这个是因为64位程序的一个地址一般用两个字来表示，而32位只用一个字</p>
+<h4 id="我们来练习下下断点"><a href="#我们来练习下下断点" class="headerlink" title="我们来练习下下断点"></a>我们来练习下下断点</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">b* 0x4009D8</span><br><span class="line">r</span><br></pre></td></tr></table></figure>
+<p>输入以上的命令，在出现的菜单输入1</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t14.png" alt=""></p>
+<p>就会断在这个地方</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t15.png" alt=""></p>
+<p>就是我们下断点的地方</p>
+<p>我们再下一个断点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b* 0x400A1A</span><br></pre></td></tr></table></figure>
+<p>然后输入c，继续运行</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t16.png" alt=""></p>
+<p>这个时候是不是什么都没显示？</p>
+<p>这是因为我们上一个断点停在了call read这里，程序还在等待我们的输入</p>
+<p>我们随便输入1234，按下回车</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t17.png" alt=""></p>
+<p>这个时候就断在了这个地方了</p>
+<h4 id="接下来我们介绍下如何调试开了pie的程序"><a href="#接下来我们介绍下如何调试开了pie的程序" class="headerlink" title="接下来我们介绍下如何调试开了pie的程序"></a>接下来我们介绍下如何调试开了pie的程序</h4><p>我们先下载一个程序</p>
+<p><a href="https://github.com/charlieleex/charlieleex.github.io/tree/master/2018/06/21/pwn%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83%E7%AC%AC%E4%BA%8C%E7%AB%A0%E2%80%94%E2%80%94ida%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/babystack" target="_blank" rel="noopener">babyheap</a></p>
+<p>将其复制到虚拟机中，chmod 777 babyheap加权限，gdb ./babyheap调试</p>
+<p>先输入r，运行程序，然后按ctrl+c，输入vmmap，查看程序的基址</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t18.png" alt=""></p>
+<p>这里我的基址是0x555555554000，每个人的可能有些不同</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t19.png" alt=""></p>
+<p>在ida中看到的地址不像没开pie的，这里只有很短的4位，所以假如说我要在1063这个地址下个断点，在gdb中是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b* 0x1063+0x555555554000</span><br></pre></td></tr></table></figure>
+<p>后面的基址如果是gdb attach来调试的话，每次都会改变，但是像这样用gdb来调试的话，不会每次都改变</p>
+<p>我们来练习一下，假如要下个断点在0xB9C</p>
+<p>是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b* 0xB9C+0x555555554000</span><br></pre></td></tr></table></figure></p>
+<p>然后再输入c，然后再随便输入个数字</p>
+<p>可以看到程序断在了</p>
+<p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t20.png" alt=""></p>
+<p>这里就是gdb的基本操作，如果想了解gdb的更多骚操作，可以去百度或者谷歌搜下gdb的教程或者基本用法</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/" data-id="cjipaxn3p0001g8u53rhbrkc9" class="article-share-link">Share</a>
+      <a data-url="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/" data-id="cjjs30zk80001m8u5mq7v4rer" class="article-share-link">Share</a>
       
       
     </footer>
