@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t18.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t19.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t20.png">
-<meta property="og:updated_time" content="2018-07-19T04:51:50.461Z">
+<meta property="og:updated_time" content="2018-07-19T04:58:12.675Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pwn从入门到放弃第三章——gdb的基本使用教程">
 <meta name="twitter:description" content="考完试了，来填坑 gdb在做题中经常用到，熟练掌握gdb会事半功倍 我们继续用第二章中的程序来讲解gdb的使用 将程序直接拖进vmware中，因为我们下的vmware专用版本的kali，所以已经安装好vmware tool之类的，直接拖进去或者复制粘贴进去就可以了 打开terminal，cd到Desktop 先给程序加可执行权限，在terminal输入 1chmod 777 babystack 然">
@@ -207,7 +207,7 @@
 <p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t17.png" alt=""></p>
 <p>这个时候就断在了这个地方了</p>
 <h4 id="接下来我们介绍下如何调试开了pie的程序"><a href="#接下来我们介绍下如何调试开了pie的程序" class="headerlink" title="接下来我们介绍下如何调试开了pie的程序"></a>接下来我们介绍下如何调试开了pie的程序</h4><p>我们先下载一个程序</p>
-<p><a href="https://github.com/charlieleex/charlieleex.github.io/tree/master/2018/06/21/pwn%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83%E7%AC%AC%E4%BA%8C%E7%AB%A0%E2%80%94%E2%80%94ida%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/babystack" target="_blank" rel="noopener">babyheap</a></p>
+<p><a href="https://github.com/charlieleex/charlieleex.github.io/blob/master/2018/06/22/pwn%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83%E7%AC%AC%E4%B8%89%E7%AB%A0%E2%80%94%E2%80%94gdb%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/babyheap" target="_blank" rel="noopener">babyheap</a></p>
 <p>将其复制到虚拟机中，chmod 777 babyheap加权限，gdb ./babyheap调试</p>
 <p>先输入r，运行程序，然后按ctrl+c，输入vmmap，查看程序的基址</p>
 <p><img src="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/t18.png" alt=""></p>
