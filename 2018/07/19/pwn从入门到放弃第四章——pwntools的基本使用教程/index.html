@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>pwn从入门到放弃第四章——pwntools的基本使用教程 | PWN? PWN!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="pwntools是除了ida和gdb以外最常用的工具，python的语法并不难，大概只要懂一些c和c++的编程，转换到python的编程非常简单 这里随便给一个教程，你也可以找其他自己觉得好的教程学一下 python教程 基本学一下循环，函数之类的就可以直接写python了 这里还要说一下，pwntools只能安装在python2下面，所以语法什么的都是python2的，但是如果学过python3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn从入门到放弃第四章——pwntools的基本使用教程">
+<meta property="og:url" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="pwntools是除了ida和gdb以外最常用的工具，python的语法并不难，大概只要懂一些c和c++的编程，转换到python的编程非常简单 这里随便给一个教程，你也可以找其他自己觉得好的教程学一下 python教程 基本学一下循环，函数之类的就可以直接写python了 这里还要说一下，pwntools只能安装在python2下面，所以语法什么的都是python2的，但是如果学过python3">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t2.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t3.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t4.png">
+<meta property="og:updated_time" content="2018-07-20T02:15:00.044Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pwn从入门到放弃第四章——pwntools的基本使用教程">
+<meta name="twitter:description" content="pwntools是除了ida和gdb以外最常用的工具，python的语法并不难，大概只要懂一些c和c++的编程，转换到python的编程非常简单 这里随便给一个教程，你也可以找其他自己觉得好的教程学一下 python教程 基本学一下循环，函数之类的就可以直接写python了 这里还要说一下，pwntools只能安装在python2下面，所以语法什么的都是python2的，但是如果学过python3">
+<meta name="twitter:image" content="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="PWN? PWN!" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">PWN? PWN!</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://charlieleex.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pwn从入门到放弃第四章——pwntools的基本使用教程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/" class="article-date">
+  <time datetime="2018-07-19T05:01:20.000Z" itemprop="datePublished">2018-07-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      pwn从入门到放弃第四章——pwntools的基本使用教程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>pwntools是除了ida和gdb以外最常用的工具，python的语法并不难，大概只要懂一些c和c++的编程，转换到python的编程非常简单</p>
+<p>这里随便给一个教程，你也可以找其他自己觉得好的教程学一下</p>
+<p><a href="https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000" target="_blank" rel="noopener">python教程</a></p>
+<p>基本学一下循环，函数之类的就可以直接写python了</p>
+<p>这里还要说一下，pwntools只能安装在python2下面，所以语法什么的都是python2的，但是如果学过python3的也很容易转换过来</p>
+<p>这里写给一下我pwntools脚本的模板</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">debug=1</span><br><span class="line">if debug:</span><br><span class="line">    p=process(&apos;&apos;)</span><br><span class="line">    #p=process(&apos;&apos;,env=&#123;&apos;LD_PRELOAD&apos;:&apos;./libc.so&apos;&#125;)</span><br><span class="line">    context.log_level=&apos;debug&apos;</span><br><span class="line">    gdb.attach(p)</span><br><span class="line">else:</span><br><span class="line">    p=remote(&apos;&apos;)</span><br><span class="line"></span><br><span class="line">def ru(x):</span><br><span class="line">    return p.recvuntil(x)</span><br><span class="line"></span><br><span class="line">def se(x):</span><br><span class="line">    p.send(x)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<p>这里介绍一下pwntools比较有用的函数</p>
+<p>我们可以打开terminal，输入python，进入python的交互命令行，然后再输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br></pre></td></tr></table></figure>
+<h3 id="p32-p64"><a href="#p32-p64" class="headerlink" title="p32 p64"></a>p32 p64</h3><p>就是将一个数字转换为字符，例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p32(0xdeadbeef)</span><br></pre></td></tr></table></figure>
+<p>就会转换为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;\xef\xbe\xad\xde&apos;</span><br></pre></td></tr></table></figure></p>
+<p>这里顺序反了是因为linux编译的程序是小端序的</p>
+<h3 id="u32-u64"><a href="#u32-u64" class="headerlink" title="u32 u64"></a>u32 u64</h3><p>就是将字符转换为数字，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">u32(&apos;\x12\x34\x56\x78&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>结果</p>
+<p><img src="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t1.png" alt=""></p>
+<p>这里可能要解释下，\x78是一个字符，代表的是16进制78的ascii字符</p>
+<p><img src="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t2.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x78=120=&apos;x&apos;</span><br><span class="line">0x56=86=&apos;V&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="cyclic"><a href="#cyclic" class="headerlink" title="cyclic"></a>cyclic</h3><p>这个是一个在栈溢出或者各种需要找偏移的时候比较有用的函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cyclic(40)</span><br></pre></td></tr></table></figure>
+<p>这是生成40个字节长的字符串，这个字符串是按照一定规律来生成的</p>
+<p><img src="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t3.png" alt=""></p>
+<p>假如说我想找aaaj这个字符串的偏移，我们可以用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cyclic_find(&apos;aaaj&apos;)</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/t4.png" alt=""></p>
+<h3 id="接下来解释下我模板中定义的ru和se函数"><a href="#接下来解释下我模板中定义的ru和se函数" class="headerlink" title="接下来解释下我模板中定义的ru和se函数"></a>接下来解释下我模板中定义的ru和se函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def ru(x):</span><br><span class="line">    return p.recvuntil(x)</span><br><span class="line"></span><br><span class="line">def se(x):</span><br><span class="line">    p.send(x)</span><br></pre></td></tr></table></figure>
+<p>这里的p是由<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p=process(&apos;&apos;)</span><br><span class="line">或</span><br><span class="line">p=remote(&apos;&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>赋值的，process是指运行本地的程序，remote是指连接远程的服务器<br>这里给下process和remote的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p=process(&apos;./babystack&apos;)</span><br><span class="line">p=remote(&apos;123.123.123.123&apos;,8888)</span><br></pre></td></tr></table></figure>
+<p>回到函数，p.recvuntil，这个很明显就是接收字符串直到接收到x</p>
+<p>这里给个运用的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ru(&apos;Hello World&apos;)</span><br></pre></td></tr></table></figure>
+<p>这里就是说明接收字符串，直到接收到Hello World</p>
+<p>而p.send就是发送字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">se(&apos;Hi!&apos;)</span><br></pre></td></tr></table></figure>
+<p>这里就是发送 Hi! 给程序或者远程服务器</p>
+<p>其实pwntools还有另外一个函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p.sendline(&apos;xxxx&apos;)</span><br></pre></td></tr></table></figure>
+<p>这里就是发送 ‘xxxx\n’ 给程序或者服务器</p>
+<h3 id="接下来解释下模板中的gdb-attach"><a href="#接下来解释下模板中的gdb-attach" class="headerlink" title="接下来解释下模板中的gdb.attach"></a>接下来解释下模板中的gdb.attach</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb.attach(p)</span><br></pre></td></tr></table></figure>
+<p>这个是用于本地程序调试的，gdb可以附加到一个正在运行的程序上面，进行调试</p>
+<p>gdb attach一般会停在read的syscall那里，等待输入，因为gdb attach是附加到正在运行的程序上面，而p=process之后，程序停在了等待输入那里，所以gdb附加上去之后就停在read 的syscall那里</p>
+<p>之后的各种操作就和gdb使用教程教的一样</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://charlieleex.github.io/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/" data-id="cjlqlf5kf0006t0u5x4l02leu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/20/pwn从入门到放弃第五章——最简简简简简简单的栈溢出/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          pwn从入门到放弃第五章——最简简简简简简单的栈溢出
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">pwn从入门到放弃第三章——gdb的基本使用教程</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/08/15/large-bin-attack-学习记录/">large bin attack 学习记录</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/29/pwn从入门到放弃第六章——简单ROP/">pwn从入门到放弃第六章——简单ROP</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/20/pwn从入门到放弃第五章——最简简简简简简单的栈溢出/">pwn从入门到放弃第五章——最简简简简简简单的栈溢出</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/">pwn从入门到放弃第四章——pwntools的基本使用教程</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/">pwn从入门到放弃第三章——gdb的基本使用教程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Charlie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

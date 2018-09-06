@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>pwn从入门到放弃第二章——ida的基本使用教程 | PWN? PWN!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn从入门到放弃第二章——ida的基本使用教程">
+<meta property="og:url" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t2.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t3.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t4.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t5.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t6.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t7.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t8.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t9.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t10.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t11.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t12.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t13.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t14.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t15.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t16.png">
+<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t17.png">
+<meta property="og:updated_time" content="2018-06-22T05:29:45.292Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pwn从入门到放弃第二章——ida的基本使用教程">
+<meta name="twitter:description" content="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..ida的使用首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好 https://www.52pojie.cn/threa">
+<meta name="twitter:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="PWN? PWN!" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">PWN? PWN!</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://charlieleex.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pwn从入门到放弃第二章——ida的基本使用教程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/" class="article-date">
+  <time datetime="2018-06-21T11:56:35.000Z" itemprop="datePublished">2018-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      pwn从入门到放弃第二章——ida的基本使用教程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法"><a href="#其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法" class="headerlink" title="其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法"></a>其实ida与gdb的使用是一个不断学习的过程，不是一蹴而就的，所以这里只是介绍一下基本的使用方法</h4><h4 id="这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………"><a href="#这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………" class="headerlink" title="这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了……….."></a>这里还要说一下，善用gdb和ida，能在比赛的时候加快审计和调试代程序的速度，就能更快解题拿到一血（虽然现在一血没什么用了………..</h4><h2 id="ida的使用"><a href="#ida的使用" class="headerlink" title="ida的使用"></a>ida的使用</h2><p>首先给下ida 7.0的下载地址，推荐使用7.0， 因为6.8或者更低的版本反编译成c语言代码不是很好</p>
+<p><a href="https://www.52pojie.cn/thread-675251-1-1.html" target="_blank" rel="noopener">https://www.52pojie.cn/thread-675251-1-1.html</a></p>
+<p>貌似只有百度云了，凑合着下吧…….</p>
+<p>这里给一个比赛的二进制文件，用来作为教程的例子，记得要用64位的ida来打开</p>
+<p><a href="https://github.com/charlieleex/charlieleex.github.io/tree/master/2018/06/21/pwn%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83%E7%AC%AC%E4%BA%8C%E7%AB%A0%E2%80%94%E2%80%94ida%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/babystack" target="_blank" rel="noopener">babystack</a></p>
+<p>下面是ida加载完文件之后的界面，有时候会加载到start那里，所以我们双击一下左边的main</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t1.png" alt=""></p>
+<p>这个时候按下空格，会发现界面切换了</p>
+<p>一开始的界面是汇编层面上的流程图，空格切换之后就是顺序的汇编代码</p>
+<p>这个时候再按下Tab键或者f5，就可以看到反编译后的c语言代码，我比较常用的是tab，因为可以从c语言返回到汇编界面</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t2.png" alt=""></p>
+<p>这里是反汇编后的c语言代码</p>
+<p>这里会看到很多sub_4008b9 这种函数，这是ida对于没有调试信息的二进制的函数的处理</p>
+<p>单纯看着这些函数经常会看错，而且不清楚那个函数到底干了什么</p>
+<p>所以我们就要对这些函数进行重命名</p>
+<p>我们首先双击sub_4008b9，进入这个函数看看里面究竟干了什么</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t3.png" alt=""></p>
+<p>里面还有sub_400826</p>
+<p>再点进去</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t4.png" alt=""></p>
+<p>发现其实就只是调用了puts</p>
+<p>这个时候点击如图所示的红框圈着的返回</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t5.png" alt=""></p>
+<p>返回到上一层</p>
+<p>单击一下sub_400826, 然后就会像下图一样变黄（感觉有点不对劲…..</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t6.png" alt=""></p>
+<p>然后按一下n</p>
+<p>会弹出一个框</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t7.png" alt=""></p>
+<p>这里输入mputs，然后回车，可以看到那些函数都变成mputs了</p>
+<p>下面那个函数看了下，调用了strlen，然后再调用了write，就叫它mwrite吧，改好之后就变成</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t8.png" alt=""></p>
+<p>所以这个函数的功能就是输出菜单</p>
+<p>返回上一层，把这个函数改成menu吧</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t9.png" alt=""></p>
+<p>当把所有函数的名字都改好了之后，整个程序的逻辑就很清晰了</p>
+<p>一般做一道pwn题，这个步骤是最先做的，做完这一步，后面就是代码审计，找出程序的漏洞</p>
+<p>我们继续讲下ida的使用</p>
+<p>主函数的sub_40841其实是一个读取数字的函数，我们可以将其改名为get_num</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t10.png" alt=""></p>
+<p>我们可以看上图中红色框框的地方，那些rsp+10h就是指明了那些变量在栈上的位置，rsp，rbp这两个是寄存器，可以简单的理解为指向栈底和栈顶的寄存器（并不完全正确，但是初步理解一下</p>
+<p>这里我们看到，s和v6之间的空间是  0x98-0x10=0x88 这么大，这其实就说明s实际上是一个0x88字节大小的char数组</p>
+<p>下面我们看到switch中的case 1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">read(0,&amp;s,0x100);</span><br></pre></td></tr></table></figure>
+<p>s只有0x88字节大小，但是却往里面读进去0x100字节大小的数据，这里就会导致缓冲区溢出</p>
+<p>简单的从ida静态分析，我们就可以看出程序的漏洞在哪里</p>
+<h4 id="下面，我们来了解一下交叉引用和搜索"><a href="#下面，我们来了解一下交叉引用和搜索" class="headerlink" title="下面，我们来了解一下交叉引用和搜索"></a>下面，我们来了解一下交叉引用和搜索</h4><p>按下Tab，让右边的界面变成顺序的汇编代码，双击下左边的puts，下图红框框着的地方</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t11.png" alt=""></p>
+<p>然后右边就会显示</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t12.png" alt=""></p>
+<p>红框框着的地方就是交叉引用了</p>
+<p>这里就显示了puts这个库函数被什么调用了</p>
+<p>我们可以双击 main+E1</p>
+<p>然后我们就看到</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t13.png" alt=""></p>
+<p>跳到main函数调用puts的地方了，再按下Tab</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t14.png" alt=""></p>
+<p>我们看到原来是case2 中调用了puts</p>
+<p>那这个交叉引用在分析程序中有什么用呢？下面简单说下</p>
+<p>假如要分析的程序非常大，有很多函数，很难一个个分析过来，这个时候看到它调用了库函数system</p>
+<p>我们就可以靠交叉引用来找出哪一部分调用了system，再进行重点的分析</p>
+<p>但是，有时候交叉引用显示的数量太少，我们有两个办法</p>
+<ol>
+<li>选择上面的Options-&gt;General-&gt;Cross-references</li>
+</ol>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t15.png" alt=""></p>
+<p>改红框里面的数字就能更改显示的reference数量</p>
+<ol start="2">
+<li>直接进行搜索</li>
+</ol>
+<p>按下快捷键Alt+T，会弹出如下图的搜索框</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t16.png" alt=""></p>
+<p>如果要不选红框那里的话，会搜索光标以下的代码，如果选了红框，会搜索整个二进制</p>
+<p><img src="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/t17.png" alt=""></p>
+<p>不过这里搜索的结果有点多，要自己肉眼过滤一波</p>
+<p>这里只是简单介绍了一下ida的使用，更详细的可以上网搜索《IDA.Pro权威指南》这本书，里面有各种ida的使用技巧</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/" data-id="cjlqlf5jz0005t0u5asgls3bu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          pwn从入门到放弃第三章——gdb的基本使用教程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/21/pwn从入门到放弃第一章——环境安装/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">pwn从入门到放弃第一章——环境安装</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/08/15/large-bin-attack-学习记录/">large bin attack 学习记录</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/29/pwn从入门到放弃第六章——简单ROP/">pwn从入门到放弃第六章——简单ROP</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/20/pwn从入门到放弃第五章——最简简简简简简单的栈溢出/">pwn从入门到放弃第五章——最简简简简简简单的栈溢出</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/19/pwn从入门到放弃第四章——pwntools的基本使用教程/">pwn从入门到放弃第四章——pwntools的基本使用教程</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/22/pwn从入门到放弃第三章——gdb的基本使用教程/">pwn从入门到放弃第三章——gdb的基本使用教程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Charlie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
