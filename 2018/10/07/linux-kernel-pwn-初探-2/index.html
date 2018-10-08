@@ -117,7 +117,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t2.png">
-<meta property="og:updated_time" content="2018-10-08T04:55:56.927Z">
+<meta property="og:updated_time" content="2018-10-08T04:58:43.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux kernel pwn 初探(2)">
 <meta name="twitter:description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
@@ -342,7 +342,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-10-08 12:55:56" itemprop="dateModified" datetime="2018-10-08T12:55:56+08:00">2018-10-08</time>
+                <time title="Modified: 2018-10-08 12:58:43" itemprop="dateModified" datetime="2018-10-08T12:58:43+08:00">2018-10-08</time>
               
             
           </span>
@@ -379,8 +379,8 @@
 <p>这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了</p>
 <p>于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有……..</p>
 <p>这里给一下我编译好的kernel和driver吧</p>
-<p><a href="linux-kernel-pwn-初探-2/bzImage">kernel</a></p>
-<p><a href="linux-kernel-pwn-初探-2/null.ko">driver</a></p>
+<p><a href="bzImage">kernel</a></p>
+<p><a href="null.ko">driver</a></p>
 <p>初始化脚本如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">echo &quot;&#123;==DBG==&#125; INIT SCRIPT&quot;</span><br><span class="line">mkdir /tmp</span><br><span class="line">mount -t proc none /proc</span><br><span class="line">mount -t sysfs none /sys</span><br><span class="line">mount -t debugfs none /sys/kernel/debug</span><br><span class="line">mount -t tmpfs none /tmp</span><br><span class="line">insmod /null.ko</span><br><span class="line">mdev -s # We need this to find /dev/sda later</span><br><span class="line">sysctl -w vm.mmap_min_addr=&quot;0&quot;</span><br><span class="line">echo -e &quot;&#123;==DBG==&#125; Boot took $(cut -d&apos; &apos; -f1 /proc/uptime) seconds&quot;</span><br><span class="line">setsid /bin/cttyhack setuidgid 1000 /bin/sh #normal user</span><br><span class="line">#exec /bin/sh #root</span><br></pre></td></tr></table></figure>
 <p>测试用的poc如下</p>
