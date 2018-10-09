@@ -110,16 +110,16 @@
 
   <meta name="description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux kernel pwn 初探(2)">
+<meta property="og:title" content="linux kernel pwn 初探(2)  NULL Defence">
 <meta property="og:url" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
 <meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t2.png">
-<meta property="og:updated_time" content="2018-10-08T04:58:43.199Z">
+<meta property="og:updated_time" content="2018-10-09T08:18:00.765Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux kernel pwn 初探(2)">
+<meta name="twitter:title" content="linux kernel pwn 初探(2)  NULL Defence">
 <meta name="twitter:description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
 <meta name="twitter:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
 
@@ -138,7 +138,7 @@
   };
 </script>
 
-  <title>linux kernel pwn 初探(2) | PWN? PWN!</title>
+  <title>linux kernel pwn 初探(2)  NULL Defence | PWN? PWN!</title>
   
 
 
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">linux kernel pwn 初探(2)
+          <h1 class="post-title" itemprop="name headline">linux kernel pwn 初探(2)  NULL Defence
               
             
           </h1>
@@ -342,7 +342,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-10-08 12:58:43" itemprop="dateModified" datetime="2018-10-08T12:58:43+08:00">2018-10-08</time>
+                <time title="Modified: 2018-10-09 16:18:00" itemprop="dateModified" datetime="2018-10-09T16:18:00+08:00">2018-10-09</time>
               
             
           </span>
@@ -428,8 +428,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/07/linux-kernel-pwn-初探-1/" rel="next" title="linux kernel pwn 初探(1)">
-                <i class="fa fa-chevron-left"></i> linux kernel pwn 初探(1)
+              <a href="/2018/10/07/linux-kernel-pwn-初探-1/" rel="next" title="linux kernel pwn 初探(1)  环境配置">
+                <i class="fa fa-chevron-left"></i> linux kernel pwn 初探(1)  环境配置
               </a>
             
           </div>
