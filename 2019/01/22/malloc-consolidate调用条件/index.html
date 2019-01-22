@@ -108,24 +108,28 @@
 
 
 
-  <meta name="description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
+  <meta name="description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AFL fuzz 初探">
-<meta property="og:url" content="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/index.html">
+<meta property="og:title" content="malloc_consolidate调用条件">
+<meta property="og:url" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
+<meta property="og:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-09-26T02:16:53.591Z">
+<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t2.png">
+<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t3.png">
+<meta property="og:updated_time" content="2019-01-22T03:05:54.450Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="AFL fuzz 初探">
-<meta name="twitter:description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
+<meta name="twitter:title" content="malloc_consolidate调用条件">
+<meta name="twitter:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
+<meta name="twitter:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/"/>
 
 
 
@@ -135,7 +139,7 @@
   };
 </script>
 
-  <title>AFL fuzz 初探 | PWN? PWN!</title>
+  <title>malloc_consolidate调用条件 | PWN? PWN!</title>
   
 
 
@@ -280,7 +284,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -297,7 +301,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">AFL fuzz 初探
+          <h1 class="post-title" itemprop="name headline">malloc_consolidate调用条件
               
             
           </h1>
@@ -322,24 +326,12 @@
                 
               
 
-              <time title="Created: 2018-09-16 14:44:52" itemprop="dateCreated datePublished" datetime="2018-09-16T14:44:52+08:00">2018-09-16</time>
+              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:05:54" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-09-26 10:16:53" itemprop="dateModified" datetime="2018-09-26T10:16:53+08:00">2018-09-26</time>
               
             
           </span>
@@ -372,12 +364,26 @@
       
 
       
-        <p>这里给一个比较好的入门的项目</p>
-<p><a href="https://github.com/ThalesIgnite/afl-training" target="_blank" rel="noopener">afl-training</a></p>
-<p>这个项目能让你初步熟悉afl-fuzz</p>
-<p>然后可以自己写个栈溢出的漏洞来熟悉一下afl</p>
-<p>虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了…….</p>
-<p>然后又测试了一下tcpdump…….10小时一个crash都没出…….</p>
+        <p>很久没写博客了，现在有空更新一下吧</p>
+<p>最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到</p>
+<p>于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件</p>
+<h3 id="1-malloc-large-bin"><a href="#1-malloc-large-bin" class="headerlink" title="1. malloc large bin"></a>1. malloc large bin</h3><p>具体的代码如下，假如malloc的size大于small bin的范围，先调用malloc_consolidate将fastbin 合并为unsorted bin</p>
+<p><img src="/2019/01/22/malloc-consolidate调用条件/t1.png" alt=""></p>
+<h3 id="2-top-chunk不够空间"><a href="#2-top-chunk不够空间" class="headerlink" title="2. top chunk不够空间"></a>2. top chunk不够空间</h3><p>下面是简单的测试代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    void* h1 = malloc(0x68);</span><br><span class="line">    void* h2 = malloc(0x20e48);</span><br><span class="line">    free(h1);</span><br><span class="line">    malloc(0x300);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是源代码</p>
+<p><img src="/2019/01/22/malloc-consolidate调用条件/t2.png" alt=""></p>
+<h3 id="3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><a href="#3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536" class="headerlink" title="3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536"></a>3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</h3><p>具体大概是下面的流程</p>
+<ol>
+<li>判断chunk是否属于fastbin，如果不是，继续</li>
+<li>判断chunk是否属于map的，如果不是，继续</li>
+<li>假如下一个chunk是top chunk，合并</li>
+<li>判断当前chunk的size是否大于FASTBIN_CONSOLIDATION_THRESHOLD，假如大于，调用malloc_consolidate</li>
+</ol>
+<p>测试代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    void* h1 = malloc(0x68);</span><br><span class="line">    void* h2 = malloc(0xa8);</span><br><span class="line">    void* h3 = malloc(0xa8);</span><br><span class="line">    free(h1);</span><br><span class="line">    free(h3);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/01/22/malloc-consolidate调用条件/t3.png" alt=""></p>
+<p>这里是源码，上面的红框是合并top chunk，下面的是判断条件调用malloc_consolidate</p>
 
       
     </div>
@@ -405,8 +411,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/15/large-bin-attack-学习记录/" rel="next" title="large bin attack 学习记录">
-                <i class="fa fa-chevron-left"></i> large bin attack 学习记录
+              <a href="/2018/10/11/linux-kernel-pwn-初探-5/" rel="next" title="linux kernel pwn 初探(5) UAF">
+                <i class="fa fa-chevron-left"></i> linux kernel pwn 初探(5) UAF
               </a>
             
           </div>
@@ -414,10 +420,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/07/linux-kernel-pwn-初探-1/" rel="prev" title="linux kernel pwn 初探(1)  环境配置">
-                linux kernel pwn 初探(1)  环境配置 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -462,8 +464,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -508,6 +519,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-malloc-large-bin"><span class="nav-number">1.</span> <span class="nav-text">1. malloc large bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-top-chunk不够空间"><span class="nav-number">2.</span> <span class="nav-text">2. top chunk不够空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><span class="nav-number">3.</span> <span class="nav-text">3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
