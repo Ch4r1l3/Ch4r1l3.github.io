@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t2.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t3.png">
-<meta property="og:updated_time" content="2019-01-22T03:05:54.450Z">
+<meta property="og:updated_time" content="2019-01-22T03:10:25.446Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="malloc_consolidate调用条件">
 <meta name="twitter:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
@@ -326,7 +326,7 @@
                 
               
 
-              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:05:54" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
+              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:10:25" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
             
 
             
@@ -373,7 +373,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    void* h1 = malloc(0x68);</span><br><span class="line">    void* h2 = malloc(0x20e48);</span><br><span class="line">    free(h1);</span><br><span class="line">    malloc(0x300);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>下面是源代码</p>
 <p><img src="/2019/01/22/malloc-consolidate调用条件/t2.png" alt=""></p>
-<h3 id="3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><a href="#3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536" class="headerlink" title="3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536"></a>3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</h3><p>具体大概是下面的流程</p>
+<h3 id="3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><a href="#3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536" class="headerlink" title="3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536"></a>3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</h3><p>比较容易实现的是与top chunk合并后size大于FASTBIN_CONSOLIDATION_THRESHOLD 具体大概是下面的流程</p>
 <ol>
 <li>判断chunk是否属于fastbin，如果不是，继续</li>
 <li>判断chunk是否属于map的，如果不是，继续</li>
@@ -529,7 +529,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-malloc-large-bin"><span class="nav-number">1.</span> <span class="nav-text">1. malloc large bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-top-chunk不够空间"><span class="nav-number">2.</span> <span class="nav-text">2. top chunk不够空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-在free函数合并top-chunk后size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><span class="nav-number">3.</span> <span class="nav-text">3. 在free函数合并top chunk后size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-malloc-large-bin"><span class="nav-number">1.</span> <span class="nav-text">1. malloc large bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-top-chunk不够空间"><span class="nav-number">2.</span> <span class="nav-text">2. top chunk不够空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><span class="nav-number">3.</span> <span class="nav-text">3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</span></a></li></ol></div>
             
 
           </div>
