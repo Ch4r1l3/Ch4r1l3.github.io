@@ -108,26 +108,24 @@
 
 
 
-  <meta name="description" content="做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 百度云onedrive 第二步下载完之后，解压镜像到一个文件夹 然后导入到vmware里面 第三步运行kali 默认帐号密码是roottoor 接着打开terminal">
+  <meta name="description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
 <meta property="og:type" content="article">
-<meta property="og:title" content="pwn从入门到放弃第一章——环境安装">
-<meta property="og:url" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/index.html">
+<meta property="og:title" content="AFL源码分析1——afl-gcc.c源码分析">
+<meta property="og:url" content="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 百度云onedrive 第二步下载完之后，解压镜像到一个文件夹 然后导入到vmware里面 第三步运行kali 默认帐号密码是roottoor 接着打开terminal">
+<meta property="og:description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png">
-<meta property="og:updated_time" content="2018-09-26T12:18:24.178Z">
+<meta property="og:updated_time" content="2019-03-05T10:52:22.424Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="pwn从入门到放弃第一章——环境安装">
-<meta name="twitter:description" content="做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装 第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错 这里是下载地址 百度云onedrive 第二步下载完之后，解压镜像到一个文件夹 然后导入到vmware里面 第三步运行kali 默认帐号密码是roottoor 接着打开terminal">
-<meta name="twitter:image" content="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png">
+<meta name="twitter:title" content="AFL源码分析1——afl-gcc.c源码分析">
+<meta name="twitter:description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/"/>
 
 
 
@@ -137,7 +135,7 @@
   };
 </script>
 
-  <title>pwn从入门到放弃第一章——环境安装 | PWN? PWN!</title>
+  <title>AFL源码分析1——afl-gcc.c源码分析 | PWN? PWN!</title>
   
 
 
@@ -282,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -299,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">pwn从入门到放弃第一章——环境安装
+          <h1 class="post-title" itemprop="name headline">AFL源码分析1——afl-gcc.c源码分析
               
             
           </h1>
@@ -324,24 +322,12 @@
                 
               
 
-              <time title="Created: 2018-06-21 17:27:33" itemprop="dateCreated datePublished" datetime="2018-06-21T17:27:33+08:00">2018-06-21</time>
+              <time title="Created: 2019-03-05 17:56:09 / Modified: 18:52:22" itemprop="dateCreated datePublished" datetime="2019-03-05T17:56:09+08:00">2019-03-05</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-09-26 20:18:24" itemprop="dateModified" datetime="2018-09-26T20:18:24+08:00">2018-09-26</time>
               
             
           </span>
@@ -374,29 +360,29 @@
       
 
       
-        <p>做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装</p>
-<h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错</p>
-<p>这里是下载地址</p>
-<p><a href="https://pan.baidu.com/s/1Nd_X8WoWceAm02XKyqK5vg" target="_blank" rel="noopener">百度云</a><br><a href="https://mail2sysueducn-my.sharepoint.com/:u:/g/personal/liheng27_mail2_sysu_edu_cn/EeqT1rQzYeRCvZHPl3JMNmUBUZlK4eoUuRGf_GicBupEyg" target="_blank" rel="noopener">onedrive</a></p>
-<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>下载完之后，解压镜像到一个文件夹</p>
-<p>然后导入到vmware里面</p>
-<h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>运行kali</p>
-<p>默认帐号密码是<br>root<br>toor</p>
-<p>接着打开terminal</p>
-<p>输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<p>接着输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/apt/sources.list</span><br></pre></td></tr></table></figure></p>
-<p>然后进入编辑界面，按一下i，输入或者粘贴下面的内容 (在kali下面粘帖是按ctrl+shift+v)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian/ stretch-backports main non-free contrib</span><br><span class="line">deb http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br><span class="line">deb-src http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib</span><br></pre></td></tr></table></figure></p>
-<p>输入完之后，按下esc，输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:wq</span><br></pre></td></tr></table></figure></p>
-<p>如下图</p>
-<p><img src="/2018/06/21/pwn从入门到放弃第一章——环境安装/t1.png" alt=""></p>
-<p>然后按下回车，就会退出</p>
-<p>这里解释下为什么要干这一步，看不懂可以暂时跳过<br>kali的官方源会把libc更新到2.27，但是我们平时做题一般都是用Libc 2.24，如果更新到2.27 就不能正常的做某些题目，所以这里是把源换成163的debian源</p>
-<h4 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h4><p>在terminal里面继续输入命令, 安装 pwntools</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pwntools</span><br></pre></td></tr></table></figure>
-<h4 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h4><p>安装pwndbg</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
-<h3 id="到这里，一个做pwn的环境已经搭建好了"><a href="#到这里，一个做pwn的环境已经搭建好了" class="headerlink" title="到这里，一个做pwn的环境已经搭建好了"></a>到这里，一个做pwn的环境已经搭建好了</h3>
+        <p>想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码</p>
+<p>首先看下main函数，关键的部分是下面这三行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">find_as(argv[0]);</span><br><span class="line"></span><br><span class="line">edit_params(argc, argv);</span><br><span class="line"></span><br><span class="line">execvp(cc_params[0], (char**)cc_params);</span><br></pre></td></tr></table></figure>
+<h3 id="首先是find-as"><a href="#首先是find-as" class="headerlink" title="首先是find as"></a>首先是find as</h3><p>as是什么东西呢？</p>
+<blockquote>
+<p>如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”-&gt;”汇编代码”-&gt;”二进制”这样的过程。而将汇编代码编译成为二进制的工具，即为汇编器assembler。Linux系统下的常用汇编器是as。</p>
+</blockquote>
+<p>find_as里面详细的过程这里就不分析了</p>
+<h3 id="之后就是edit-params"><a href="#之后就是edit-params" class="headerlink" title="之后就是edit_params"></a>之后就是edit_params</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cc_params = ck_alloc((argc + 128) * sizeof(u8*));</span><br></pre></td></tr></table></figure>
+<p>首先是分配一块内存空间</p>
+<p>然后就是根据argv配置各种东西，包括环境变量的设置</p>
+<p>其中看到一些有趣的东西</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (!strcmp(cur, &quot;-fsanitize=address&quot;) ||</span><br><span class="line">       !strcmp(cur, &quot;-fsanitize=memory&quot;)) asan_set = 1;</span><br><span class="line"></span><br><span class="line">   if (strstr(cur, &quot;FORTIFY_SOURCE&quot;)) fortify_set = 1;</span><br><span class="line"></span><br><span class="line">   cc_params[cc_par_cnt++] = cur;</span><br></pre></td></tr></table></figure>
+<p>上网查了下资料，大概就是AFL可以使用sanitizer去更有效的查找memory access bugs</p>
+<p>但是同时也会带来性能的下降</p>
+<h3 id="最后是-execvp"><a href="#最后是-execvp" class="headerlink" title="最后是 execvp"></a>最后是 execvp</h3><p>这里可以打印一下参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc note.c -o www -B /home/test/afl-2.52b -g -O3 -funroll-loops -D__AFL_COMPILER=1 -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1</span><br></pre></td></tr></table></figure>
+<p>关键的一点就是 -B</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-B &lt;directory&gt;           Add &lt;directory&gt; to the compiler&apos;s search paths</span><br></pre></td></tr></table></figure>
+<p>大概就是汇编器的目录</p>
+<p>上面的find_as就是用来找这个的</p>
+<p>所以 afl-gcc就是gcc 的一个wraper,用来设置一下gcc的编译选项，还有就是把汇编器换成afl自己实现的一个汇编器</p>
+
       
     </div>
 
@@ -423,15 +409,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/01/22/hitcon2017-ghost-in-the-heap-writeup/" rel="next" title="hitcon2017 ghost_in_the_heap writeup">
+                <i class="fa fa-chevron-left"></i> hitcon2017 ghost_in_the_heap writeup
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/21/pwn从入门到放弃第二章——ida的基本使用教程/" rel="prev" title="pwn从入门到放弃第二章——ida的基本使用教程">
-                pwn从入门到放弃第二章——ida的基本使用教程 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -541,7 +527,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步"><span class="nav-number">1.</span> <span class="nav-text">第一步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步"><span class="nav-number">2.</span> <span class="nav-text">第二步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步"><span class="nav-number">3.</span> <span class="nav-text">第三步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步"><span class="nav-number">4.</span> <span class="nav-text">第四步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第五步"><span class="nav-number">5.</span> <span class="nav-text">第五步</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#到这里，一个做pwn的环境已经搭建好了"><span class="nav-number"></span> <span class="nav-text">到这里，一个做pwn的环境已经搭建好了</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先是find-as"><span class="nav-number">1.</span> <span class="nav-text">首先是find as</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#之后就是edit-params"><span class="nav-number">2.</span> <span class="nav-text">之后就是edit_params</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后是-execvp"><span class="nav-number">3.</span> <span class="nav-text">最后是 execvp</span></a></li></ol></div>
             
 
           </div>
