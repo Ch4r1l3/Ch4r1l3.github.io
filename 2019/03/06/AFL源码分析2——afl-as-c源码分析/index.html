@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="首先来看下main函数 1u8* inst_ratio_str = getenv(&amp;quot;AFL_INST_RATIO&amp;quot;); 先是从环境变量中拿了AFL_INST_RATIO，应该是插入指令的密度 之后一大堆东西略过一下 12345gettimeofday(&amp;amp;tv, &amp;amp;tz);rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL源码分析2——afl-as.c源码分析">
+<meta property="og:url" content="https://charlieleex.github.io/2019/03/06/AFL源码分析2——afl-as-c源码分析/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="首先来看下main函数 1u8* inst_ratio_str = getenv(&amp;quot;AFL_INST_RATIO&amp;quot;); 先是从环境变量中拿了AFL_INST_RATIO，应该是插入指令的密度 之后一大堆东西略过一下 12345gettimeofday(&amp;amp;tv, &amp;amp;tz);rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-06T11:48:52.160Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFL源码分析2——afl-as.c源码分析">
+<meta name="twitter:description" content="首先来看下main函数 1u8* inst_ratio_str = getenv(&amp;quot;AFL_INST_RATIO&amp;quot;); 先是从环境变量中拿了AFL_INST_RATIO，应该是插入指令的密度 之后一大堆东西略过一下 12345gettimeofday(&amp;amp;tv, &amp;amp;tz);rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();">
+
+
+
+
+
+
+  <link rel="canonical" href="https://charlieleex.github.io/2019/03/06/AFL源码分析2——afl-as-c源码分析/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AFL源码分析2——afl-as.c源码分析 | PWN? PWN!</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PWN? PWN!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/06/AFL源码分析2——afl-as-c源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AFL源码分析2——afl-as.c源码分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-06 17:13:52 / Modified: 19:48:52" itemprop="dateCreated datePublished" datetime="2019-03-06T17:13:52+08:00">2019-03-06</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>首先来看下main函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">u8* inst_ratio_str = getenv(&quot;AFL_INST_RATIO&quot;);</span><br></pre></td></tr></table></figure>
+<p>先是从环境变量中拿了AFL_INST_RATIO，应该是插入指令的密度</p>
+<p>之后一大堆东西略过一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gettimeofday(&amp;tv, &amp;tz);</span><br><span class="line"></span><br><span class="line">rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();</span><br><span class="line"></span><br><span class="line">srandom(rand_seed);</span><br></pre></td></tr></table></figure>
+<p>这里是根据时间和pid来随机化seed</p>
+<p>再下面是把 inst_ratio_str转为数字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (inst_ratio_str) &#123;</span><br><span class="line"></span><br><span class="line">  if (sscanf(inst_ratio_str, &quot;%u&quot;, &amp;inst_ratio) != 1 || inst_ratio &gt; 100) </span><br><span class="line">    FATAL(&quot;Bad value of AFL_INST_RATIO (must be between 0 and 100)&quot;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后比较有趣的一部分代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if (getenv(&quot;AFL_USE_ASAN&quot;) || getenv(&quot;AFL_USE_MSAN&quot;)) &#123;</span><br><span class="line">  sanitizer = 1;</span><br><span class="line">  inst_ratio /= 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果使用 ASAN或者MSAN的话，就会把插入指令的密度降低为 1/3，以加快速度</p>
+<p>之后就是关键的add_instrumentation函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (input_file) &#123;</span><br><span class="line"></span><br><span class="line">  inf = fopen(input_file, &quot;r&quot;);</span><br><span class="line">  if (!inf) PFATAL(&quot;Unable to read &apos;%s&apos;&quot;, input_file);</span><br><span class="line"></span><br><span class="line">&#125; else inf = stdin;</span><br></pre></td></tr></table></figure>
+<p>首先是打开汇编代码文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">outfd = open(modified_file, O_WRONLY | O_EXCL | O_CREAT, 0600);</span><br><span class="line"></span><br><span class="line">if (outfd &lt; 0) PFATAL(&quot;Unable to write to &apos;%s&apos;&quot;, modified_file);</span><br><span class="line"></span><br><span class="line">outf = fdopen(outfd, &quot;w&quot;);</span><br><span class="line"></span><br><span class="line">if (!outf) PFATAL(&quot;fdopen() failed&quot;);</span><br></pre></td></tr></table></figure>
+<p>然后打开一个新的文件</p>
+<p>然后就是循环读每一行，进行判断</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if (!pass_thru &amp;&amp; !skip_intel &amp;&amp; !skip_app &amp;&amp; !skip_csect &amp;&amp; instr_ok &amp;&amp;</span><br><span class="line">        instrument_next &amp;&amp; line[0] == &apos;\t&apos; &amp;&amp; isalpha(line[1])) &#123;</span><br><span class="line"></span><br><span class="line">      fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,</span><br><span class="line">              R(MAP_SIZE));</span><br><span class="line"></span><br><span class="line">      instrument_next = 0;</span><br><span class="line">      ins_lines++;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>一开始就是判断一堆条件，假如满足这些条件的话，就插入指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fputs(line, outf);</span><br></pre></td></tr></table></figure>
+<p>之后再输出原来那行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">if (line[0] == &apos;\t&apos; &amp;&amp; line[1] == &apos;.&apos;) &#123;</span><br><span class="line"></span><br><span class="line">  /* OpenBSD puts jump tables directly inline with the code, which is</span><br><span class="line">     a bit annoying. They use a specific format of p2align directives</span><br><span class="line">     around them, so we use that as a signal. */</span><br><span class="line"></span><br><span class="line">  if (!clang_mode &amp;&amp; instr_ok &amp;&amp; !strncmp(line + 2, &quot;p2align &quot;, 8) &amp;&amp;</span><br><span class="line">      isdigit(line[10]) &amp;&amp; line[11] == &apos;\n&apos;) skip_next_label = 1;</span><br><span class="line"></span><br><span class="line">  if (!strncmp(line + 2, &quot;text\n&quot;, 5) ||</span><br><span class="line">      !strncmp(line + 2, &quot;section\t.text&quot;, 13) ||</span><br><span class="line">      !strncmp(line + 2, &quot;section\t__TEXT,__text&quot;, 21) ||</span><br><span class="line">      !strncmp(line + 2, &quot;section __TEXT,__text&quot;, 21)) &#123;</span><br><span class="line">    instr_ok = 1;</span><br><span class="line">    continue; </span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (!strncmp(line + 2, &quot;section\t&quot;, 8) ||</span><br><span class="line">      !strncmp(line + 2, &quot;section &quot;, 8) ||</span><br><span class="line">      !strncmp(line + 2, &quot;bss\n&quot;, 4) ||</span><br><span class="line">      !strncmp(line + 2, &quot;data\n&quot;, 5)) &#123;</span><br><span class="line">    instr_ok = 0;</span><br><span class="line">    continue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里是找 .text在的那一行，也就是代码段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (strstr(line, &quot;.code&quot;)) &#123;</span><br><span class="line"></span><br><span class="line">      if (strstr(line, &quot;.code32&quot;)) skip_csect = use_64bit;</span><br><span class="line">      if (strstr(line, &quot;.code64&quot;)) skip_csect = !use_64bit;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里是判断是32位还是64位的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/* If we&apos;re in the right mood for instrumenting, check for function</span><br><span class="line">      names or conditional labels. This is a bit messy, but in essence,</span><br><span class="line">      we want to catch:</span><br><span class="line"></span><br><span class="line">        ^main:      - function entry point (always instrumented)</span><br><span class="line">        ^.L0:       - GCC branch label</span><br><span class="line">        ^.LBB0_0:   - clang branch label (but only in clang mode)</span><br><span class="line">        ^\tjnz foo  - conditional branches</span><br><span class="line"></span><br><span class="line">      ...but not:</span><br><span class="line"></span><br><span class="line">        ^# BB#0:    - clang comments</span><br><span class="line">        ^ # BB#0:   - ditto</span><br><span class="line">        ^.Ltmp0:    - clang non-branch labels</span><br><span class="line">        ^.LC0       - GCC non-branch labels</span><br><span class="line">        ^.LBB0_0:   - ditto (when in GCC mode)</span><br><span class="line">        ^\tjmp foo  - non-conditional jumps</span><br><span class="line"></span><br><span class="line">      Additionally, clang and GCC on MacOS X follow a different convention</span><br><span class="line">      with no leading dots on labels, hence the weird maze of #ifdefs</span><br><span class="line">      later on.</span><br><span class="line"></span><br><span class="line">    */</span><br></pre></td></tr></table></figure>
+<p>这段注释大概就是说，在 main函数，GCC branch label，clang branch label，conditional branches处插入指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">if (line[0] == &apos;\t&apos;) &#123;</span><br><span class="line"></span><br><span class="line">      if (line[1] == &apos;j&apos; &amp;&amp; line[2] != &apos;m&apos; &amp;&amp; R(100) &lt; inst_ratio) &#123;</span><br><span class="line"></span><br><span class="line">        fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,</span><br><span class="line">                R(MAP_SIZE));</span><br><span class="line"></span><br><span class="line">        ins_lines++;</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      continue;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里就是找到 j开头，但是第二个字母不是m的指令，如jne, jbe指令的</p>
+<p>后面还有 R(100) &lt; inst_ratio 这个就是根据概率来选择插入或者不插入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (ins_lines)</span><br><span class="line">  fputs(use_64bit ? main_payload_64 : main_payload_32, outf);</span><br></pre></td></tr></table></figure>
+<p>这里还会插入 main_payload</p>
+<p>插入的两个汇编有点长，这里就不仔细分析了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (!(pid = fork())) &#123;</span><br><span class="line"></span><br><span class="line">  execvp(as_params[0], (char**)as_params);</span><br><span class="line">  FATAL(&quot;Oops, failed to execute &apos;%s&apos; - check your PATH&quot;, as_params[0]);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>插入完指令后，会fork子进程，用来执行as，将汇编变成二进制</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/" rel="next" title="AFL源码分析1——afl-gcc.c源码分析">
+                <i class="fa fa-chevron-left"></i> AFL源码分析1——afl-gcc.c源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Charlie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Charlie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
