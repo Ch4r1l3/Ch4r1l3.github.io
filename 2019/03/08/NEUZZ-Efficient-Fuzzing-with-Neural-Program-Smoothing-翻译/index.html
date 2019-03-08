@@ -122,7 +122,7 @@
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t5.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t6.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t7.png">
-<meta property="og:updated_time" content="2019-03-08T12:34:44.840Z">
+<meta property="og:updated_time" content="2019-03-08T13:02:27.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NEUZZ: Efficient Fuzzing with Neural Program Smoothing 翻译">
 <meta name="twitter:description" content="这篇文章只是一些对论文的总结，以便看起来容易理解一点，可能有点翻译腔，大概看得懂就行 原论文链接NEUZZ: Efficient Fuzzing with Neural Program Smoothing introduction由于其简单和低额外开销，fuzz在发现真实应用漏洞中取得了很大的成就。虽然很多fuzzer都声称自己能有非常好的效果，但是很多时候，特别在面对大型程序的时候，经常陷入不断">
@@ -330,7 +330,7 @@
                 
               
 
-              <time title="Created: 2019-03-08 17:58:47 / Modified: 20:34:44" itemprop="dateCreated datePublished" datetime="2019-03-08T17:58:47+08:00">2019-03-08</time>
+              <time title="Created: 2019-03-08 17:58:47 / Modified: 21:02:27" itemprop="dateCreated datePublished" datetime="2019-03-08T17:58:47+08:00">2019-03-08</time>
             
 
             
@@ -395,7 +395,7 @@
 <h4 id="Neural-program-smoothing"><a href="#Neural-program-smoothing" class="headerlink" title="Neural program smoothing."></a>Neural program smoothing.</h4><p>平滑地逼近/近似/模拟 一个程序的不连续分支行为是准确计算梯度和高阶倒数的关键。如果没用平滑化，那么gradient-guided会因此陷入不同的不连续性中。平滑化过程的目标是创造一个能模仿程序分支行为而不引入较大错误的平滑函数。我们使用前向反馈神经网络来完成这个目标。由通用逼近理论而启发，使用神经网络是用来逼近任意复杂程序行为是非常好的。更进一步。神经网络，在设计上，能高效地计算出对于我们的目标非常关键的梯度。我们将使用现有的测试输入或进化式fuzzer生成的语料库来训练神经网络。</p>
 <h4 id="Gradient-guided-optimization"><a href="#Gradient-guided-optimization" class="headerlink" title="Gradient-guided optimization."></a>Gradient-guided optimization.</h4><p>一旦神经网络模型被训练好，可以用来高效地计算出梯度和高阶函数，使用其来更快地找到最优解。有很多种不同的Gradient-guided算法例如梯度下降，Newton’s method，or quasi-Newton methods like the L-BFGS algorithm。Smooth NNs 使得fuzzing测试输出生成程序能有可能使用所有这些技术。在这篇文章中，我们设计，实现，并评估了一种为基于覆盖的fuzzing而量身订造的gradient-guided测试输出生成方法。</p>
 <h4 id="Incremental-learning"><a href="#Incremental-learning" class="headerlink" title="Incremental learning."></a>Incremental learning.</h4><p>任何现有类型的测试输入都有可能被用来训练NN model和引导fuzzing测试输出生成过程。在这篇文章中，我们通过收集一堆测试输入和由进化fuzzers如AFL生成的对应的边覆盖信息来训练NN model。</p>
-<p>但是，由于训练NN model的初始数据可能只覆盖到程序空间的一小部分，所以我们进一步通过增量训练来训练模型，因为在fuzzing的过程中，新的程序行为可以被观察到。在增量训练中，主要面对的难题是，在训练新的数据的过程中，模型有可能完全忘记从旧数据中学习的规则。为了避免这个问题，我们设计了一种新的基于覆盖的过滤方案，这种方案会生成旧数据和新数据的简练的总结，使得NN model能高效地在其上面训练。</p>
+<p>但是，由于训练NN model的初始数据可能只覆盖到程序空间的一小部分，所以我们进一步通过增量训练来训练模型，因为在fuzzing的过程中，新的程序行为可以被观察到。在增量训练中，主要面对的难题是，在训练新的数据的过程中，模型有可能完全忘记从旧数据中学习的规则。为了避免这个问题，我们设计了一种新的基于覆盖的过滤方案，这种方案会生成旧数据和新数据的简练的总结，使得NN model能高效地在其上面训练。 </p>
 <h4 id="A-Motivating-Example"><a href="#A-Motivating-Example" class="headerlink" title="A Motivating Example."></a>A Motivating Example.</h4><p><img src="/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t4.png" alt=""></p>
 <p>我们在图中大概说明了我们算法的内部大概状况，右边的的一小段c语言代码，它返回不同的值基于计算pow出来的值的范围，我们将假设有漏洞的地方在红色的部分。</p>
 <p>考虑这么一种情况，进化式的fuzzer如AFL勉强能探索到第2行和第9行的代码，但是并不能覆盖到第5行的代码。这种情况的关键难点就是a和b的值，使得其能触发到第5行代码。进化式fuzzer通常很难覆盖到这一部分，因为通过随机突变来找到一种解决方案的可能性是非常低的。那段c语言代码可以表示如图3a，在函数平面上， a+b = 0 到 a+b−$\epsilon$ = 0 ($\epsilon$ -&gt; +0) 有一个非常急剧的平面差。为了在fuzzing中最大化边覆盖率，进化式的fuzzer只能依赖于随机突变，但随机突变并没有考虑函数平面的形状。相比之下，我们的<br>NN平滑和梯度引导的突变被设计为利用梯度来测量函数表面形状。</p>
