@@ -122,7 +122,7 @@
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t5.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t6.png">
 <meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t7.png">
-<meta property="og:updated_time" content="2019-03-08T13:12:19.975Z">
+<meta property="og:updated_time" content="2019-03-08T13:15:21.895Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NEUZZ: Efficient Fuzzing with Neural Program Smoothing 翻译">
 <meta name="twitter:description" content="这篇文章只是一些对论文的总结，以便看起来容易理解一点，可能有点翻译腔，大概看得懂就行 原论文链接NEUZZ: Efficient Fuzzing with Neural Program Smoothing introduction由于其简单和低额外开销，fuzz在发现真实应用漏洞中取得了很大的成就。虽然很多fuzzer都声称自己能有非常好的效果，但是很多时候，特别在面对大型程序的时候，经常陷入不断">
@@ -330,7 +330,7 @@
                 
               
 
-              <time title="Created: 2019-03-08 17:58:47 / Modified: 21:12:19" itemprop="dateCreated datePublished" datetime="2019-03-08T17:58:47+08:00">2019-03-08</time>
+              <time title="Created: 2019-03-08 17:58:47 / Modified: 21:15:21" itemprop="dateCreated datePublished" datetime="2019-03-08T17:58:47+08:00">2019-03-08</time>
             
 
             
@@ -412,7 +412,7 @@
 <h4 id="Neural-program-smoothing-1"><a href="#Neural-program-smoothing-1" class="headerlink" title="Neural program smoothing"></a>Neural program smoothing</h4><p>在这篇文章中，我们提出一个新颖的程序平滑化方法，这种方法使用NN models，基于观察到的程序行为，迭代的学习目标程序的平滑化。这种神经网络可以平滑地推广到观察到的程序行为，同时还准确地建模潜在的非线性和非凸行为。一旦训练完成，神经网络可用于有效地计算梯度和更高级别的导数，以指导模糊输入生成过程，如图3所示。</p>
 <h4 id="Why-NNs"><a href="#Why-NNs" class="headerlink" title="Why NNs?"></a>Why NNs?</h4><p>正如通用逼近定理所启示的，NN非常适合近似复杂的程序行为。使用NN来平滑化程序的优点有：(1) NN可以准确地模拟复杂的非线性程序行为，并且可以有效地进行训练，之前已经有人使用线性和二次模型来进行模拟。<br>然而，这些模型不适合用于建模具有高度非线性和非凸性行为的实际软件。(2) NN支持有效计算其梯度和高阶导数。因此，gradient-guided算法可以在fuzzing中计算和使用这些信息，而无需任何额外开销。(3) NN可以概括并学习根据类似输入的行为来预测程序对未知输入的行为，因此，NN可以基于其对少量输入样本的行为来潜在地学习整个程序的平滑近似。</p>
 <h4 id="NN-Training"><a href="#NN-Training" class="headerlink" title="NN Training"></a>NN Training</h4><p>虽然NN可以用来模拟程序行为的不同方面，但在本文中我们专门用它们来模拟目标程序的分支行为。使用神经网络对分支行为进行建模的挑战之一是需要接受可变大小的输入。与实际应用不同，前馈NN通常接受固定大小的输入。因此，我们设置最大输入大小阈值，并在训练期间使用空字节填充任何较小尺寸的输入。而支持更大的输入不是主要问题，因为现代NN可以轻松扩展到数百万个参数。因此，对于较大的程序，我们可以根据需要简单地增加阈值大小。然而，我们凭经验发现相对适度的阈值产生最佳结果，而较大的输入不会显着提高建模精度。</p>
-<p>正式地，让 $f: {$0x00,0x01,……,0xff$}^m$ -&gt; ${0,1}^n$ NN模型大小为m的字节序列作为输入，并输出大小为n的bitmap。让 $\theta$ 作为 $f$的可训练权值参数。给定一组训练样本$(X,Y)$，X是输入数据，Y是对应的边覆盖bitmap，参数函数$f(x,\theta) =  y $ 的训练任务是得到一个参数$\hat{\theta}$，使得最小化<br>$$\min \sum_{x \in X, y \in Y} L(y,f(x,\theta))$$ </p>
+<p>正式地，让 $f: ${0x00,0x01,……,0xff}$^m$ -&gt; ${0,1}^n$ NN模型大小为m的字节序列作为输入，并输出大小为n的bitmap。让 $\theta$ 作为 $f$的可训练权值参数。给定一组训练样本$(X,Y)$，X是输入数据，Y是对应的边覆盖bitmap，参数函数$f(x,\theta) =  y $ 的训练任务是得到一个参数$\hat{\theta}$，使得最小化<br>$$\min \sum_{x \in X, y \in Y} L(y,f(x,\theta))$$ </p>
 <p>$L(y,f(x,\theta))$是NN model的输出和在训练集中真正的 $y \in Y$的损失函数。训练任务就是找到NN $f$的一组权值 $\theta$，使得误差最小化，这个误差使用距离去度量。特别的，我们使用我们使用二进制交叉熵来计算预测bitmap和真实覆盖bitmap之间的距离。还有，我们让$y_i$ 和 $f_i(x,\theta)$来表示真正输出bitmap中第i个bit和预测输出bitmap中第i个bit。然后，这两者之间的二元交叉熵定义为</p>
 <p>$$-\frac{1}{n} \sum_{i=1}^n [y_i \cdot \log(f_i(x,\theta))+(1-y_i) \cdot \log(1-f_i(x,\theta)))] $$</p>
 <p>在本文中，我们使用前馈完全连接的NN来模拟目标程序的分支行为，使用前馈架构允许高效地计算梯度和快速训练。</p>
