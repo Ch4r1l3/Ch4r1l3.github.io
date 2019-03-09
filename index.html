@@ -277,6 +277,167 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/08/AFL源码分析3——afl-as-h源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/08/AFL源码分析3——afl-as-h源码分析/" itemprop="url">
+                  AFL源码分析3——afl-as.h源码分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-08 22:44:22" itemprop="dateCreated datePublished" datetime="2019-03-08T22:44:22+08:00">2019-03-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-09 14:07:51" itemprop="dateModified" datetime="2019-03-09T14:07:51+08:00">2019-03-09</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          这篇文章只分析64位的情况，32位大同小异，这里就不多阐述
+trampoline_fmt_64首先看到的是trampoline_fmt_64
+这段汇编是在汇编器编译汇编到二进制时插入到汇编代码中的。
+1234567891011121314151617181920static const u8* tr
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/08/AFL源码分析3——afl-as-h源码分析/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1630,165 +1791,6 @@ open 两次设备
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Charlie">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="PWN? PWN!">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/07/linux-kernel-pwn-初探-2/" itemprop="url">
-                  linux kernel pwn 初探(2)  NULL Defence
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-10-07 16:57:09" itemprop="dateCreated datePublished" datetime="2018-10-07T16:57:09+08:00">2018-10-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-10-09 16:18:00" itemprop="dateModified" datetime="2018-10-09T16:18:00+08:00">2018-10-09</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel
-这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/07/linux-kernel-pwn-初探-2/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1836,7 +1838,7 @@ open 两次设备
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2045,9 +2047,9 @@ open 两次设备
   
     
       
-        
-      
     
+      
+        
       
     
       
