@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧 detect_file_args这个函数是将命令参数中的@@替换为真正的文件路径 12345678910111213141516171819202122232425262728293031323334353637383940414243EXP_ST void detect_file_args(char** argv) &amp;#1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL源码分析4——afl-fuzz.c源码分析1">
+<meta property="og:url" content="https://charlieleex.github.io/2019/03/09/AFL源码分析4——afl-fuzz-c源码分析1/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧 detect_file_args这个函数是将命令参数中的@@替换为真正的文件路径 12345678910111213141516171819202122232425262728293031323334353637383940414243EXP_ST void detect_file_args(char** argv) &amp;#1">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-09T13:59:49.552Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFL源码分析4——afl-fuzz.c源码分析1">
+<meta name="twitter:description" content="因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧 detect_file_args这个函数是将命令参数中的@@替换为真正的文件路径 12345678910111213141516171819202122232425262728293031323334353637383940414243EXP_ST void detect_file_args(char** argv) &amp;#1">
+
+
+
+
+
+
+  <link rel="canonical" href="https://charlieleex.github.io/2019/03/09/AFL源码分析4——afl-fuzz-c源码分析1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AFL源码分析4——afl-fuzz.c源码分析1 | PWN? PWN!</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PWN? PWN!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/09/AFL源码分析4——afl-fuzz-c源码分析1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AFL源码分析4——afl-fuzz.c源码分析1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-09 20:25:44 / Modified: 21:59:49" itemprop="dateCreated datePublished" datetime="2019-03-09T20:25:44+08:00">2019-03-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧</p>
+<h3 id="detect-file-args"><a href="#detect-file-args" class="headerlink" title="detect_file_args"></a>detect_file_args</h3><p>这个函数是将命令参数中的@@替换为真正的文件路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">EXP_ST void detect_file_args(char** argv) &#123;</span><br><span class="line"></span><br><span class="line">  u32 i = 0;</span><br><span class="line">  u8* cwd = getcwd(NULL, 0);</span><br><span class="line"></span><br><span class="line">  if (!cwd) PFATAL(&quot;getcwd() failed&quot;);</span><br><span class="line"></span><br><span class="line">  while (argv[i]) &#123;</span><br><span class="line"></span><br><span class="line">    u8* aa_loc = strstr(argv[i], &quot;@@&quot;);</span><br><span class="line"></span><br><span class="line">    if (aa_loc) &#123;</span><br><span class="line"></span><br><span class="line">      u8 *aa_subst, *n_arg;</span><br><span class="line"></span><br><span class="line">      /* If we don&apos;t have a file name chosen yet, use a safe default. */</span><br><span class="line"></span><br><span class="line">      if (!out_file)</span><br><span class="line">        out_file = alloc_printf(&quot;%s/.cur_input&quot;, out_dir);</span><br><span class="line"></span><br><span class="line">      /* Be sure that we&apos;re always using fully-qualified paths. */</span><br><span class="line"></span><br><span class="line">      if (out_file[0] == &apos;/&apos;) aa_subst = out_file;</span><br><span class="line">      else aa_subst = alloc_printf(&quot;%s/%s&quot;, cwd, out_file);</span><br><span class="line"></span><br><span class="line">      /* Construct a replacement argv value. */</span><br><span class="line"></span><br><span class="line">      *aa_loc = 0;</span><br><span class="line">      n_arg = alloc_printf(&quot;%s%s%s&quot;, argv[i], aa_subst, aa_loc + 2);</span><br><span class="line">      argv[i] = n_arg;</span><br><span class="line">      *aa_loc = &apos;@&apos;;</span><br><span class="line"></span><br><span class="line">      if (out_file[0] != &apos;/&apos;) ck_free(aa_subst);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    i++;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  free(cwd); /* not tracked */</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先用getcwd拿到当前路径</p>
+<p>然后遍历argv，判断各个参数是否含有@@</p>
+<p>有的话，首先判断有没有定义一个文件名，如果没有的话，就使用.cur_input</p>
+<p>之后使用alloc_printf来生成一个新的字符串，替换原来的</p>
+<h3 id="setup-stdio-file"><a href="#setup-stdio-file" class="headerlink" title="setup_stdio_file"></a>setup_stdio_file</h3><p>假如在detect_file_args没有找到@@，就会跳到这里，设置好stdio_file</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">EXP_ST void setup_stdio_file(void) &#123;</span><br><span class="line"></span><br><span class="line">  u8* fn = alloc_printf(&quot;%s/.cur_input&quot;, out_dir);</span><br><span class="line"></span><br><span class="line">  unlink(fn); /* Ignore errors */</span><br><span class="line"></span><br><span class="line">  out_fd = open(fn, O_RDWR | O_CREAT | O_EXCL, 0600);</span><br><span class="line"></span><br><span class="line">  if (out_fd &lt; 0) PFATAL(&quot;Unable to create &apos;%s&apos;&quot;, fn);</span><br><span class="line"></span><br><span class="line">  ck_free(fn);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用的还是 .cur_input</p>
+<h3 id="perform-dry-run"><a href="#perform-dry-run" class="headerlink" title="perform_dry_run"></a>perform_dry_run</h3><p>这个函数是测试输入的样例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">while (q) &#123;</span><br><span class="line"></span><br><span class="line">  u8* use_mem;</span><br><span class="line">  u8  res;</span><br><span class="line">  s32 fd;</span><br><span class="line"></span><br><span class="line">  u8* fn = strrchr(q-&gt;fname, &apos;/&apos;) + 1;</span><br><span class="line"></span><br><span class="line">  ACTF(&quot;Attempting dry run with &apos;%s&apos;...&quot;, fn);</span><br><span class="line"></span><br><span class="line">  fd = open(q-&gt;fname, O_RDONLY);</span><br><span class="line">  if (fd &lt; 0) PFATAL(&quot;Unable to open &apos;%s&apos;&quot;, q-&gt;fname);</span><br><span class="line"></span><br><span class="line">  use_mem = ck_alloc_nozero(q-&gt;len);</span><br><span class="line"></span><br><span class="line">  if (read(fd, use_mem, q-&gt;len) != q-&gt;len)</span><br><span class="line">    FATAL(&quot;Short read from &apos;%s&apos;&quot;, q-&gt;fname);</span><br><span class="line"></span><br><span class="line">  close(fd);</span><br><span class="line"></span><br><span class="line">  res = calibrate_case(argv, q, use_mem, 0, 1);</span><br><span class="line">  ck_free(use_mem);</span><br></pre></td></tr></table></figure>
+<p>首先是一个循环，遍历整个输入样例的队列</p>
+<p>然后先是打开文件，分配一块内存，将文件内容读入内存</p>
+<p>然后调用calibrate_case进行测试</p>
+<p>之后对测试的结果进行判断，有FAULT_NONE，FAULT_TMOUT，FAULT_CRASH等，这里就不详细说了</p>
+<h3 id="calibrate-case"><a href="#calibrate-case" class="headerlink" title="calibrate_case"></a>calibrate_case</h3><p>首先是一大堆设置参数什么的，这里就不详细说了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (dumb_mode != 1 &amp;&amp; !no_forkserver &amp;&amp; !forksrv_pid)</span><br><span class="line">  init_forkserver(argv);</span><br></pre></td></tr></table></figure>
+<p>这里是判断forkserver是否启动了，没启动就将其启动</p>
+<p>再跳过一部分不是很重要的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write_to_testcase(use_mem, q-&gt;len);</span><br></pre></td></tr></table></figure>
+<p>这里是将testcase写到文件中去，感觉这里对磁盘的性能要求挺大的吧…….读小文件，写小文件….这里可以作为一个优化点，使用内存磁盘什么的，分一块不是很大的就够用了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fault = run_target(argv, use_tmout);</span><br><span class="line">`</span><br></pre></td></tr></table></figure>
+<p>这里就是真正的运行程序，里面的逻辑其实在分析afl-as.h的时候已经讲到了</p>
+<p>其中有一个小细节就是，假如没有@@，就会将.cur_input的fd dup2到0上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);</span><br></pre></td></tr></table></figure>
+<p>之后就是计算trace_bits的checksum，这里trace_bits就是共享内存</p>
+<p>下面就是一些对测试样例性能的分析，把这个作为基准，详细的就不多说了</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/08/AFL源码分析3——afl-as-h源码分析/" rel="next" title="AFL源码分析3——afl-as.h源码分析">
+                <i class="fa fa-chevron-left"></i> AFL源码分析3——afl-as.h源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Charlie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#detect-file-args"><span class="nav-number">1.</span> <span class="nav-text">detect_file_args</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setup-stdio-file"><span class="nav-number">2.</span> <span class="nav-text">setup_stdio_file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#perform-dry-run"><span class="nav-number">3.</span> <span class="nav-text">perform_dry_run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calibrate-case"><span class="nav-number">4.</span> <span class="nav-text">calibrate_case</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Charlie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
