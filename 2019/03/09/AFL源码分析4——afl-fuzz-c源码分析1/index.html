@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧 detect_file_args这个函数是将命令参数中的@@替换为真正的文件路径 12345678910111213141516171819202122232425262728293031323334353637383940414243EXP_ST void detect_file_args(char** argv) &amp;#1">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-09T13:59:49.552Z">
+<meta property="og:updated_time" content="2019-03-09T14:20:56.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AFL源码分析4——afl-fuzz.c源码分析1">
 <meta name="twitter:description" content="因为afl-fuzz.c源码太多了，所以我只挑我比较感兴趣的部分来分析吧 detect_file_args这个函数是将命令参数中的@@替换为真正的文件路径 12345678910111213141516171819202122232425262728293031323334353637383940414243EXP_ST void detect_file_args(char** argv) &amp;#1">
@@ -322,7 +322,7 @@
                 
               
 
-              <time title="Created: 2019-03-09 20:25:44 / Modified: 21:59:49" itemprop="dateCreated datePublished" datetime="2019-03-09T20:25:44+08:00">2019-03-09</time>
+              <time title="Created: 2019-03-09 20:25:44 / Modified: 22:20:56" itemprop="dateCreated datePublished" datetime="2019-03-09T20:25:44+08:00">2019-03-09</time>
             
 
             
@@ -388,6 +388,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);</span><br></pre></td></tr></table></figure>
 <p>之后就是计算trace_bits的checksum，这里trace_bits就是共享内存</p>
 <p>下面就是一些对测试样例性能的分析，把这个作为基准，详细的就不多说了</p>
+<h3 id="cull-queue"><a href="#cull-queue" class="headerlink" title="cull_queue"></a>cull_queue</h3><p>这是一个用来设置favored entry的函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct queue_entry* q;</span><br><span class="line">static u8 temp_v[MAP_SIZE &gt;&gt; 3];</span><br><span class="line">u32 i;</span><br><span class="line"></span><br><span class="line">if (dumb_mode || !score_changed) return;</span><br><span class="line"></span><br><span class="line">score_changed = 0;</span><br><span class="line"></span><br><span class="line">memset(temp_v, 255, MAP_SIZE &gt;&gt; 3);</span><br></pre></td></tr></table></figure>
+<p>首先是初始化temp_v（previously-unseen bytes）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while (q) &#123;</span><br><span class="line">  q-&gt;favored = 0;</span><br><span class="line">  q = q-&gt;next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后将queue_entry中的所有favored设为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">for (i = 0; i &lt; MAP_SIZE; i++)</span><br><span class="line">  if (top_rated[i] &amp;&amp; (temp_v[i &gt;&gt; 3] &amp; (1 &lt;&lt; (i &amp; 7)))) &#123;</span><br><span class="line"></span><br><span class="line">    u32 j = MAP_SIZE &gt;&gt; 3;</span><br><span class="line"></span><br><span class="line">    /* Remove all bits belonging to the current entry from temp_v. */</span><br><span class="line"></span><br><span class="line">    while (j--) </span><br><span class="line">      if (top_rated[i]-&gt;trace_mini[j])</span><br><span class="line">        temp_v[j] &amp;= ~top_rated[i]-&gt;trace_mini[j];</span><br><span class="line"></span><br><span class="line">    top_rated[i]-&gt;favored = 1;</span><br><span class="line">    queued_favored++;</span><br><span class="line"></span><br><span class="line">    if (!top_rated[i]-&gt;was_fuzzed) pending_favored++;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">q = queue;</span><br><span class="line"></span><br><span class="line">while (q) &#123;</span><br><span class="line">  mark_as_redundant(q, !q-&gt;favored);</span><br><span class="line">  q = q-&gt;next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就是判断有没有没被temp_v所命中的bitmap，如果有，并且在top_rated中，就将其设为favored</p>
 
       
     </div>
@@ -533,7 +540,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#detect-file-args"><span class="nav-number">1.</span> <span class="nav-text">detect_file_args</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setup-stdio-file"><span class="nav-number">2.</span> <span class="nav-text">setup_stdio_file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#perform-dry-run"><span class="nav-number">3.</span> <span class="nav-text">perform_dry_run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calibrate-case"><span class="nav-number">4.</span> <span class="nav-text">calibrate_case</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#detect-file-args"><span class="nav-number">1.</span> <span class="nav-text">detect_file_args</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setup-stdio-file"><span class="nav-number">2.</span> <span class="nav-text">setup_stdio_file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#perform-dry-run"><span class="nav-number">3.</span> <span class="nav-text">perform_dry_run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calibrate-case"><span class="nav-number">4.</span> <span class="nav-text">calibrate_case</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cull-queue"><span class="nav-number">5.</span> <span class="nav-text">cull_queue</span></a></li></ol></div>
             
 
           </div>
