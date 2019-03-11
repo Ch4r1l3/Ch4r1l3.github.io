@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这篇文章和上一篇一样，只会着重地分析一些比较重要的部分。 fuzz_one这是一个函数，从准备fuzz的队列中拿出一项，用来fuzz，这个函数返回0就代表fuzz成功，1就代表这个被跳过或不要这一项了 12345678if (pending_favored) &amp;#123;    /* If we have any favored, non-fuzzed new arrivals in the qu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL源码分析5——afl-fuzz.c源码分析2">
+<meta property="og:url" content="https://charlieleex.github.io/2019/03/10/AFL源码分析5——afl-fuzz-c源码分析2/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="这篇文章和上一篇一样，只会着重地分析一些比较重要的部分。 fuzz_one这是一个函数，从准备fuzz的队列中拿出一项，用来fuzz，这个函数返回0就代表fuzz成功，1就代表这个被跳过或不要这一项了 12345678if (pending_favored) &amp;#123;    /* If we have any favored, non-fuzzed new arrivals in the qu">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-11T03:25:44.233Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFL源码分析5——afl-fuzz.c源码分析2">
+<meta name="twitter:description" content="这篇文章和上一篇一样，只会着重地分析一些比较重要的部分。 fuzz_one这是一个函数，从准备fuzz的队列中拿出一项，用来fuzz，这个函数返回0就代表fuzz成功，1就代表这个被跳过或不要这一项了 12345678if (pending_favored) &amp;#123;    /* If we have any favored, non-fuzzed new arrivals in the qu">
+
+
+
+
+
+
+  <link rel="canonical" href="https://charlieleex.github.io/2019/03/10/AFL源码分析5——afl-fuzz-c源码分析2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AFL源码分析5——afl-fuzz.c源码分析2 | PWN? PWN!</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PWN? PWN!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/10/AFL源码分析5——afl-fuzz-c源码分析2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AFL源码分析5——afl-fuzz.c源码分析2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-10 09:47:47" itemprop="dateCreated datePublished" datetime="2019-03-10T09:47:47+08:00">2019-03-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-11 11:25:44" itemprop="dateModified" datetime="2019-03-11T11:25:44+08:00">2019-03-11</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章和上一篇一样，只会着重地分析一些比较重要的部分。</p>
+<h3 id="fuzz-one"><a href="#fuzz-one" class="headerlink" title="fuzz_one"></a>fuzz_one</h3><p>这是一个函数，从准备fuzz的队列中拿出一项，用来fuzz，这个函数返回0就代表fuzz成功，1就代表这个被跳过或不要这一项了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if (pending_favored) &#123;</span><br><span class="line"></span><br><span class="line">    /* If we have any favored, non-fuzzed new arrivals in the queue,</span><br><span class="line">       possibly skip to them at the expense of already-fuzzed or non-favored</span><br><span class="line">       cases. */</span><br><span class="line"></span><br><span class="line">    if ((queue_cur-&gt;was_fuzzed || !queue_cur-&gt;favored) &amp;&amp;</span><br><span class="line">        UR(100) &lt; SKIP_TO_NEW_PROB) return 1;</span><br></pre></td></tr></table></figure>
+<p>假如pending_favored为真，那么判断下当前从队列中拿出来的这一项是否被fuzz过，或者不是favired的，当这两个条件满足其中一项，就会随机一个0-100的数，假如随机到100才会继续下去（非常残酷啊）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">else if (!dumb_mode &amp;&amp; !queue_cur-&gt;favored &amp;&amp; queued_paths &gt; 10) &#123;</span><br><span class="line"></span><br><span class="line">    /* Otherwise, still possibly skip non-favored cases, albeit less often.</span><br><span class="line">       The odds of skipping stuff are higher for already-fuzzed inputs and</span><br><span class="line">       lower for never-fuzzed entries. */</span><br><span class="line"></span><br><span class="line">    if (queue_cycle &gt; 1 &amp;&amp; !queue_cur-&gt;was_fuzzed) &#123;</span><br><span class="line"></span><br><span class="line">      if (UR(100) &lt; SKIP_NFAV_NEW_PROB) return 1;</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line"></span><br><span class="line">      if (UR(100) &lt; SKIP_NFAV_OLD_PROB) return 1;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>然后假如满足不是dumb模式，当前项不是favored，并且等待fuzz的有10项以上，就会进入else if的流程中</p>
+<p>假如当前项没被fuzz过，就有75%的几率跳过，被fuzz过就有95%的几率跳过</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/* Map the test case into memory. */</span><br><span class="line"></span><br><span class="line">fd = open(queue_cur-&gt;fname, O_RDONLY);</span><br><span class="line"></span><br><span class="line">if (fd &lt; 0) PFATAL(&quot;Unable to open &apos;%s&apos;&quot;, queue_cur-&gt;fname);</span><br><span class="line"></span><br><span class="line">len = queue_cur-&gt;len;</span><br><span class="line"></span><br><span class="line">orig_in = in_buf = mmap(0, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);</span><br><span class="line"></span><br><span class="line">if (orig_in == MAP_FAILED) PFATAL(&quot;Unable to mmap &apos;%s&apos;&quot;, queue_cur-&gt;fname);</span><br><span class="line"></span><br><span class="line">close(fd);</span><br></pre></td></tr></table></figure>
+<p>这部分是将当前的test case用mmap读进内存中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">if (queue_cur-&gt;cal_failed) &#123;</span><br><span class="line"></span><br><span class="line">  u8 res = FAULT_TMOUT;</span><br><span class="line"></span><br><span class="line">  if (queue_cur-&gt;cal_failed &lt; CAL_CHANCES) &#123;</span><br><span class="line"></span><br><span class="line">    res = calibrate_case(argv, queue_cur, in_buf, queue_cycle - 1, 0);</span><br><span class="line"></span><br><span class="line">    if (res == FAULT_ERROR)</span><br><span class="line">      FATAL(&quot;Unable to execute target application&quot;);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (stop_soon || res != crash_mode) &#123;</span><br><span class="line">    cur_skipped_paths++;</span><br><span class="line">    goto abandon_entry;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假如当前项有校准错误，并且校准错误次数小于3次，那么就用calibrate_case进行测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">/************</span><br><span class="line"> * TRIMMING *</span><br><span class="line"> ************/</span><br><span class="line">if (!dumb_mode &amp;&amp; !queue_cur-&gt;trim_done) &#123;</span><br><span class="line"></span><br><span class="line">  u8 res = trim_case(argv, queue_cur, in_buf);</span><br><span class="line"></span><br><span class="line">  if (res == FAULT_ERROR)</span><br><span class="line">    FATAL(&quot;Unable to execute target application&quot;);</span><br><span class="line"></span><br><span class="line">  if (stop_soon) &#123;</span><br><span class="line">    cur_skipped_paths++;</span><br><span class="line">    goto abandon_entry;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /* Don&apos;t retry trimming, even if it failed. */</span><br><span class="line"></span><br><span class="line">  queue_cur-&gt;trim_done = 1;</span><br><span class="line"></span><br><span class="line">  if (len != queue_cur-&gt;len) len = queue_cur-&gt;len;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">memcpy(out_buf, in_buf, len);</span><br></pre></td></tr></table></figure>
+<p>这一部分就是对样例进行trimming，trim_case这个函数我们之后会进行分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*********************</span><br><span class="line"> * PERFORMANCE SCORE *</span><br><span class="line"> *********************/</span><br><span class="line"></span><br><span class="line">orig_perf = perf_score = calculate_score(queue_cur);</span><br><span class="line"></span><br><span class="line">/* Skip right away if -d is given, if we have done deterministic fuzzing on</span><br><span class="line">   this entry ourselves (was_fuzzed), or if it has gone through deterministic</span><br><span class="line">   testing in earlier, resumed runs (passed_det). */</span><br><span class="line"></span><br><span class="line">if (skip_deterministic || queue_cur-&gt;was_fuzzed || queue_cur-&gt;passed_det)</span><br><span class="line">  goto havoc_stage;</span><br><span class="line"></span><br><span class="line">/* Skip deterministic fuzzing if exec path checksum puts this out of scope</span><br><span class="line">   for this master instance. */</span><br><span class="line"></span><br><span class="line">if (master_max &amp;&amp; (queue_cur-&gt;exec_cksum % master_max) != master_id - 1)</span><br><span class="line">  goto havoc_stage;</span><br><span class="line"></span><br><span class="line">doing_det = 1;</span><br></pre></td></tr></table></figure>
+<p>这里是用calculate_score计算评分，然后下面是根据各种条件，然后直接跳到havoc那个变异阶段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">for (stage_cur = 0; stage_cur &lt; stage_max; stage_cur++) &#123;</span><br><span class="line"></span><br><span class="line">  stage_cur_byte = stage_cur &gt;&gt; 3;</span><br><span class="line"></span><br><span class="line">  FLIP_BIT(out_buf, stage_cur);</span><br><span class="line"></span><br><span class="line">  if (common_fuzz_stuff(argv, out_buf, len)) goto abandon_entry;</span><br><span class="line"></span><br><span class="line">  FLIP_BIT(out_buf, stage_cur);</span><br></pre></td></tr></table></figure>
+<p>下面这一部分就是</p>
+<p>先留着坑，有空填</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/09/AFL源码分析4——afl-fuzz-c源码分析1/" rel="next" title="AFL源码分析4——afl-fuzz.c源码分析1">
+                <i class="fa fa-chevron-left"></i> AFL源码分析4——afl-fuzz.c源码分析1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/11/fuzz-papers总结及介绍各个paper的fuzzer/" rel="prev" title="fuzz papers总结">
+                fuzz papers总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Charlie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzz-one"><span class="nav-number">1.</span> <span class="nav-text">fuzz_one</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Charlie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

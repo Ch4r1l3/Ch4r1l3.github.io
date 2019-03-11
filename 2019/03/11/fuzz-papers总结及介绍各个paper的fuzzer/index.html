@@ -108,28 +108,24 @@
 
 
 
-  <meta name="description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
+  <meta name="description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
 <meta property="og:type" content="article">
-<meta property="og:title" content="malloc_consolidate调用条件">
-<meta property="og:url" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/index.html">
+<meta property="og:title" content="fuzz papers总结">
+<meta property="og:url" content="https://charlieleex.github.io/2019/03/11/fuzz-papers总结及介绍各个paper的fuzzer/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
+<meta property="og:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t2.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t3.png">
-<meta property="og:updated_time" content="2019-01-22T03:10:25.446Z">
+<meta property="og:updated_time" content="2019-03-11T06:56:53.611Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="malloc_consolidate调用条件">
-<meta name="twitter:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
+<meta name="twitter:title" content="fuzz papers总结">
+<meta name="twitter:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/03/11/fuzz-papers总结及介绍各个paper的fuzzer/"/>
 
 
 
@@ -139,7 +135,7 @@
   };
 </script>
 
-  <title>malloc_consolidate调用条件 | PWN? PWN!</title>
+  <title>fuzz papers总结 | PWN? PWN!</title>
   
 
 
@@ -284,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/11/fuzz-papers总结及介绍各个paper的fuzzer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -301,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">malloc_consolidate调用条件
+          <h1 class="post-title" itemprop="name headline">fuzz papers总结
               
             
           </h1>
@@ -326,7 +322,7 @@
                 
               
 
-              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:10:25" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
+              <time title="Created: 2019-03-11 11:27:17 / Modified: 14:56:53" itemprop="dateCreated datePublished" datetime="2019-03-11T11:27:17+08:00">2019-03-11</time>
             
 
             
@@ -364,26 +360,24 @@
       
 
       
-        <p>很久没写博客了，现在有空更新一下吧</p>
-<p>最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到</p>
-<p>于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件</p>
-<h3 id="1-malloc-large-bin"><a href="#1-malloc-large-bin" class="headerlink" title="1. malloc large bin"></a>1. malloc large bin</h3><p>具体的代码如下，假如malloc的size大于small bin的范围，先调用malloc_consolidate将fastbin 合并为unsorted bin</p>
-<p><img src="/2019/01/22/malloc-consolidate调用条件/t1.png" alt=""></p>
-<h3 id="2-top-chunk不够空间"><a href="#2-top-chunk不够空间" class="headerlink" title="2. top chunk不够空间"></a>2. top chunk不够空间</h3><p>下面是简单的测试代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    void* h1 = malloc(0x68);</span><br><span class="line">    void* h2 = malloc(0x20e48);</span><br><span class="line">    free(h1);</span><br><span class="line">    malloc(0x300);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下面是源代码</p>
-<p><img src="/2019/01/22/malloc-consolidate调用条件/t2.png" alt=""></p>
-<h3 id="3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><a href="#3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536" class="headerlink" title="3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536"></a>3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</h3><p>比较容易实现的是与top chunk合并后size大于FASTBIN_CONSOLIDATION_THRESHOLD 具体大概是下面的流程</p>
-<ol>
-<li>判断chunk是否属于fastbin，如果不是，继续</li>
-<li>判断chunk是否属于map的，如果不是，继续</li>
-<li>假如下一个chunk是top chunk，合并</li>
-<li>判断当前chunk的size是否大于FASTBIN_CONSOLIDATION_THRESHOLD，假如大于，调用malloc_consolidate</li>
-</ol>
-<p>测试代码如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    void* h1 = malloc(0x68);</span><br><span class="line">    void* h2 = malloc(0xa8);</span><br><span class="line">    void* h3 = malloc(0xa8);</span><br><span class="line">    free(h1);</span><br><span class="line">    free(h3);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/2019/01/22/malloc-consolidate调用条件/t3.png" alt=""></p>
-<p>这里是源码，上面的红框是合并top chunk，下面的是判断条件调用malloc_consolidate</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这篇文章是简单的对一些paper进行总结，大概会持续更新吧</p>
+<h3 id="NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><a href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing" class="headerlink" title="NEUZZ: Efficient Fuzzing with Neural Program Smoothing"></a>NEUZZ: Efficient Fuzzing with Neural Program Smoothing</h3><p><a href="https://arxiv.org/pdf/1807.05620.pdf]" target="_blank" rel="noopener">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</a></p>
+<p>这篇文章博客里面有翻译</p>
+<p><a href="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-%E7%BF%BB%E8%AF%91/#more" target="_blank" rel="noopener">NEUZZ 一篇论文的翻译</a></p>
+<p>paper用了一种程序平滑化的方法，用afl生成的seeds作为训练数据，训练神经网络，输出对应的bitmap信息，然后利用梯度等信息来生成新的测试样例，提高边覆盖率</p>
+<p>开源项目<a href="https://github.com/Dongdongshe/neuzz" target="_blank" rel="noopener">neuzz</a></p>
+<h3 id="Angora-Efficient-Fuzzing-by-Principled-Search"><a href="#Angora-Efficient-Fuzzing-by-Principled-Search" class="headerlink" title="Angora: Efficient Fuzzing by Principled Search"></a>Angora: Efficient Fuzzing by Principled Search</h3><p><a href="http://web.cs.ucdavis.edu/~hchen/paper/chen2018angora.pdf" target="_blank" rel="noopener">Angora: Efficient Fuzzing by Principled Search</a></p>
+<p>paper使用了多种技术来提升fuzz的效率</p>
+<ul>
+<li>Context-sensitive branch count afl使用的context-free的技术，而Context-sensitive 的话能提供更多信息给fuzzer，使得其能做出更好的决策</li>
+<li>Byte-level taint tracking 文章自己实现了一种tracking的方法，能判断输入数据哪一部分是被用于conditional statement中，然后专门去变异这部分</li>
+<li>Search algorithm based on gradient descent 通过taint tracking找到哪一部分是在conditional statement中之后，就用gradient descent来找到能到达未探索边的输入数据</li>
+<li>Input length exploration 简单来说就是在taint tracking中，找到那些read-like函数调用，假如这些函数的返回值被用于conditional statement中，并且conditional statement不通过，则尝试增加输入的数据</li>
+</ul>
+<p>开源项目<a href="https://github.com/AngoraFuzzer/Angora" target="_blank" rel="noopener">Angora</a></p>
+<h3 id="Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><a href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models" class="headerlink" title="Faster Fuzzing: Reinitialization with Deep Neural Models"></a>Faster Fuzzing: Reinitialization with Deep Neural Models</h3><p><a href="https://arxiv.org/pdf/1711.02807.pdf" target="_blank" rel="noopener">Faster Fuzzing: Reinitialization with Deep Neural Models</a></p>
+<p>paper说的是利用GAN和LSTM来提高seeds的质量，使得afl能探索到更多的路径，首先是先fuzz一段时间，然后用生成的seeds除重，喂给GAN，然后GAN生成新的测试样例，然后用这里样例作为初始化数据，进行fuzz，LSTM也是差不多，然后GAN的效果好一点</p>
+<p>这个项目没找到开源的代码</p>
 
       
     </div>
@@ -411,8 +405,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/11/linux-kernel-pwn-初探-5/" rel="next" title="linux kernel pwn 初探(5) UAF">
-                <i class="fa fa-chevron-left"></i> linux kernel pwn 初探(5) UAF
+              <a href="/2019/03/10/AFL源码分析5——afl-fuzz-c源码分析2/" rel="next" title="AFL源码分析5——afl-fuzz.c源码分析2">
+                <i class="fa fa-chevron-left"></i> AFL源码分析5——afl-fuzz.c源码分析2
               </a>
             
           </div>
@@ -420,10 +414,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/22/hitcon2017-ghost-in-the-heap-writeup/" rel="prev" title="hitcon2017 ghost_in_the_heap writeup">
-                hitcon2017 ghost_in_the_heap writeup <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -533,7 +523,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-malloc-large-bin"><span class="nav-number">1.</span> <span class="nav-text">1. malloc large bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-top-chunk不够空间"><span class="nav-number">2.</span> <span class="nav-text">2. top chunk不够空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-在free函数在各种合并前后chunk之后的size大于FASTBIN-CONSOLIDATION-THRESHOLD-也就是65536"><span class="nav-number">3.</span> <span class="nav-text">3. 在free函数在各种合并前后chunk之后的size大于FASTBIN_CONSOLIDATION_THRESHOLD  也就是65536</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><span class="nav-number">1.1.</span> <span class="nav-text">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angora-Efficient-Fuzzing-by-Principled-Search"><span class="nav-number">1.2.</span> <span class="nav-text">Angora: Efficient Fuzzing by Principled Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><span class="nav-number">1.3.</span> <span class="nav-text">Faster Fuzzing: Reinitialization with Deep Neural Models</span></a></li></ol></li></ol></div>
             
 
           </div>
