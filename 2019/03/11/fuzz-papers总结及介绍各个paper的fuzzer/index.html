@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-14T01:30:42.872Z">
+<meta property="og:updated_time" content="2019-03-14T12:41:08.299Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="fuzz papers总结">
 <meta name="twitter:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
@@ -339,7 +339,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-14 09:30:42" itemprop="dateModified" datetime="2019-03-14T09:30:42+08:00">2019-03-14</time>
+                <time title="Modified: 2019-03-14 20:41:08" itemprop="dateModified" datetime="2019-03-14T20:41:08+08:00">2019-03-14</time>
               
             
           </span>
@@ -406,6 +406,10 @@
 <h3 id="CollAFL-Path-Sensitive-Fuzzing"><a href="#CollAFL-Path-Sensitive-Fuzzing" class="headerlink" title="CollAFL: Path Sensitive Fuzzing"></a>CollAFL: Path Sensitive Fuzzing</h3><p><a href="http://chao.100871.net/papers/oakland18.pdf" target="_blank" rel="noopener">CollAFL: Path Sensitive Fuzzing</a></p>
 <p>这篇paper提出了一种新的路径hash方法，能有效地消除bitmap中的hash碰撞，使得fuzzer能做出更精确的决策，从而使得路径探索得更好</p>
 <p>找了下，并没有开源的项目…………….</p>
+<h3 id="T-Fuzz-fuzzing-by-program-transformation"><a href="#T-Fuzz-fuzzing-by-program-transformation" class="headerlink" title="T-Fuzz: fuzzing by program transformation"></a>T-Fuzz: fuzzing by program transformation</h3><p><a href="https://nebelwelt.net/publications/files/18Oakland.pdf" target="_blank" rel="noopener">T-Fuzz: fuzzing by program transformation</a></p>
+<p>这篇paper提出了一种方法，将某些check去除，然后直接跑后面的流程，然后再用符号执行去解决这些check，有些check用符号执行解决不了的话，可以用人工去看</p>
+<p>这个有开源的项目</p>
+<p><a href="https://github.com/HexHive/T-Fuzz" target="_blank" rel="noopener">T-Fuzz</a></p>
 
       
     </div>
@@ -551,7 +555,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><span class="nav-number">1.1.</span> <span class="nav-text">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angora-Efficient-Fuzzing-by-Principled-Search"><span class="nav-number">1.2.</span> <span class="nav-text">Angora: Efficient Fuzzing by Principled Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><span class="nav-number">1.3.</span> <span class="nav-text">Faster Fuzzing: Reinitialization with Deep Neural Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-New-Operating-Primitives-to-Improve-Fuzzing-Performance"><span class="nav-number">1.4.</span> <span class="nav-text">Designing New Operating Primitives to Improve Fuzzing Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnFuzz-From-Ensemble-Learning-to-Ensemble-Fuzzing"><span class="nav-number">1.5.</span> <span class="nav-text">EnFuzz: From Ensemble Learning to Ensemble Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CollAFL-Path-Sensitive-Fuzzing"><span class="nav-number">1.6.</span> <span class="nav-text">CollAFL: Path Sensitive Fuzzing</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><span class="nav-number">1.1.</span> <span class="nav-text">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angora-Efficient-Fuzzing-by-Principled-Search"><span class="nav-number">1.2.</span> <span class="nav-text">Angora: Efficient Fuzzing by Principled Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><span class="nav-number">1.3.</span> <span class="nav-text">Faster Fuzzing: Reinitialization with Deep Neural Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-New-Operating-Primitives-to-Improve-Fuzzing-Performance"><span class="nav-number">1.4.</span> <span class="nav-text">Designing New Operating Primitives to Improve Fuzzing Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnFuzz-From-Ensemble-Learning-to-Ensemble-Fuzzing"><span class="nav-number">1.5.</span> <span class="nav-text">EnFuzz: From Ensemble Learning to Ensemble Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CollAFL-Path-Sensitive-Fuzzing"><span class="nav-number">1.6.</span> <span class="nav-text">CollAFL: Path Sensitive Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#T-Fuzz-fuzzing-by-program-transformation"><span class="nav-number">1.7.</span> <span class="nav-text">T-Fuzz: fuzzing by program transformation</span></a></li></ol></li></ol></div>
             
 
           </div>
