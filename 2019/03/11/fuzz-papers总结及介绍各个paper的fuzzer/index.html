@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-15T08:58:04.005Z">
+<meta property="og:updated_time" content="2019-03-30T12:32:17.223Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="fuzz papers总结">
 <meta name="twitter:description" content="前言这篇文章是简单的对一些paper进行总结，大概会持续更新吧 NEUZZ: Efficient Fuzzing with Neural Program SmoothingNEUZZ: Efficient Fuzzing with Neural Program Smoothing 这篇文章博客里面有翻译 NEUZZ 一篇论文的翻译 paper用了一种程序平滑化的方法，用afl生成的seeds作为训">
@@ -339,7 +339,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-15 16:58:04" itemprop="dateModified" datetime="2019-03-15T16:58:04+08:00">2019-03-15</time>
+                <time title="Modified: 2019-03-30 20:32:17" itemprop="dateModified" datetime="2019-03-30T20:32:17+08:00">2019-03-30</time>
               
             
           </span>
@@ -414,6 +414,9 @@
 <p>这篇paper介绍了一种方法，是用于XML,JavaScript等解析的Fuzz，首先是收集目标的语料库，然后训练出一个PCSG(probabilistic context-sensitive grammar)，然后利用其去生成新的seed去fuzz</p>
 <p>开源项目</p>
 <p><a href="https://github.com/zhunki/skyfire" target="_blank" rel="noopener">skyfire</a></p>
+<h3 id="REDQUEEN-Fuzzing-with-Input-to-State-Correspondence"><a href="#REDQUEEN-Fuzzing-with-Input-to-State-Correspondence" class="headerlink" title="REDQUEEN: Fuzzing with Input-to-State Correspondence"></a>REDQUEEN: Fuzzing with Input-to-State Correspondence</h3><p><a href="https://www.syssec.ruhr-uni-bochum.de/media/emma/veroeffentlichungen/2018/12/17/NDSS19-Redqueen.pdf" target="_blank" rel="noopener">REDQUEEN: Fuzzing with Input-to-State Correspondence</a></p>
+<p>这篇文章感觉就是各个paper的集合，但是他还自己改进了挺多东西，例如在他之前自己实现的k-afl，一个面向内核的fuzzer的基础上进行改进，对于任何binary都无需源码，直接fuzz，还借鉴了T-Fuzz的思想，并在此之上进行改进</p>
+<p>本来有开源项目的，但是去项目页面看404了……..难受….</p>
 
       
     </div>
@@ -559,7 +562,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><span class="nav-number">1.1.</span> <span class="nav-text">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angora-Efficient-Fuzzing-by-Principled-Search"><span class="nav-number">1.2.</span> <span class="nav-text">Angora: Efficient Fuzzing by Principled Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><span class="nav-number">1.3.</span> <span class="nav-text">Faster Fuzzing: Reinitialization with Deep Neural Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-New-Operating-Primitives-to-Improve-Fuzzing-Performance"><span class="nav-number">1.4.</span> <span class="nav-text">Designing New Operating Primitives to Improve Fuzzing Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnFuzz-From-Ensemble-Learning-to-Ensemble-Fuzzing"><span class="nav-number">1.5.</span> <span class="nav-text">EnFuzz: From Ensemble Learning to Ensemble Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CollAFL-Path-Sensitive-Fuzzing"><span class="nav-number">1.6.</span> <span class="nav-text">CollAFL: Path Sensitive Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#T-Fuzz-fuzzing-by-program-transformation"><span class="nav-number">1.7.</span> <span class="nav-text">T-Fuzz: fuzzing by program transformation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Skyfire-Data-Driven-Seed-Generation-for-Fuzzing"><span class="nav-number">1.8.</span> <span class="nav-text">Skyfire: Data-Driven Seed Generation for Fuzzing</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing"><span class="nav-number">1.1.</span> <span class="nav-text">NEUZZ: Efficient Fuzzing with Neural Program Smoothing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angora-Efficient-Fuzzing-by-Principled-Search"><span class="nav-number">1.2.</span> <span class="nav-text">Angora: Efficient Fuzzing by Principled Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-Fuzzing-Reinitialization-with-Deep-Neural-Models"><span class="nav-number">1.3.</span> <span class="nav-text">Faster Fuzzing: Reinitialization with Deep Neural Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-New-Operating-Primitives-to-Improve-Fuzzing-Performance"><span class="nav-number">1.4.</span> <span class="nav-text">Designing New Operating Primitives to Improve Fuzzing Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnFuzz-From-Ensemble-Learning-to-Ensemble-Fuzzing"><span class="nav-number">1.5.</span> <span class="nav-text">EnFuzz: From Ensemble Learning to Ensemble Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CollAFL-Path-Sensitive-Fuzzing"><span class="nav-number">1.6.</span> <span class="nav-text">CollAFL: Path Sensitive Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#T-Fuzz-fuzzing-by-program-transformation"><span class="nav-number">1.7.</span> <span class="nav-text">T-Fuzz: fuzzing by program transformation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Skyfire-Data-Driven-Seed-Generation-for-Fuzzing"><span class="nav-number">1.8.</span> <span class="nav-text">Skyfire: Data-Driven Seed Generation for Fuzzing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REDQUEEN-Fuzzing-with-Input-to-State-Correspondence"><span class="nav-number">1.9.</span> <span class="nav-text">REDQUEEN: Fuzzing with Input-to-State Correspondence</span></a></li></ol></li></ol></div>
             
 
           </div>
