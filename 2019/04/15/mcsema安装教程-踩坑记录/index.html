@@ -108,24 +108,24 @@
 
 
 
-  <meta name="description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
+  <meta name="description" content="安装首先给下官方教程官方教程 第一步首先把依赖都给装好了，因为我之前有装vs2017，所以要弄的东西没多少，这里详细可以看官方教程 第二步这里是下载源码，照着官方教程做就行 第三步这里就有点小坑，主要是它说的不是很清楚 这里比较方便的直接就是下载它给的Binaries，然后扔到它说的那个目录下面就行 第四步首先执行VS2017目录下面的vcvars64.bat，然后再执行 12345mkdir r">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AFL源码分析1——afl-gcc.c源码分析">
-<meta property="og:url" content="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/index.html">
+<meta property="og:title" content="windows下mcsema安装及使用教程(踩坑记录)">
+<meta property="og:url" content="https://charlieleex.github.io/2019/04/15/mcsema安装教程-踩坑记录/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
+<meta property="og:description" content="安装首先给下官方教程官方教程 第一步首先把依赖都给装好了，因为我之前有装vs2017，所以要弄的东西没多少，这里详细可以看官方教程 第二步这里是下载源码，照着官方教程做就行 第三步这里就有点小坑，主要是它说的不是很清楚 这里比较方便的直接就是下载它给的Binaries，然后扔到它说的那个目录下面就行 第四步首先执行VS2017目录下面的vcvars64.bat，然后再执行 12345mkdir r">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-05T10:52:22.424Z">
+<meta property="og:updated_time" content="2019-04-15T13:29:28.991Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="AFL源码分析1——afl-gcc.c源码分析">
-<meta name="twitter:description" content="想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码 首先看下main函数，关键的部分是下面这三行 12345find_as(argv[0]);edit_params(argc, argv);execvp(cc_params[0], (char**)cc_params); 首先是find asas是什么东西呢？  如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”">
+<meta name="twitter:title" content="windows下mcsema安装及使用教程(踩坑记录)">
+<meta name="twitter:description" content="安装首先给下官方教程官方教程 第一步首先把依赖都给装好了，因为我之前有装vs2017，所以要弄的东西没多少，这里详细可以看官方教程 第二步这里是下载源码，照着官方教程做就行 第三步这里就有点小坑，主要是它说的不是很清楚 这里比较方便的直接就是下载它给的Binaries，然后扔到它说的那个目录下面就行 第四步首先执行VS2017目录下面的vcvars64.bat，然后再执行 12345mkdir r">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/04/15/mcsema安装教程-踩坑记录/"/>
 
 
 
@@ -135,7 +135,7 @@
   };
 </script>
 
-  <title>AFL源码分析1——afl-gcc.c源码分析 | PWN? PWN!</title>
+  <title>windows下mcsema安装及使用教程(踩坑记录) | PWN? PWN!</title>
   
 
 
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/05/AFL源码分析1——afl-gcc-c源码分析/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/04/15/mcsema安装教程-踩坑记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -297,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">AFL源码分析1——afl-gcc.c源码分析
+          <h1 class="post-title" itemprop="name headline">windows下mcsema安装及使用教程(踩坑记录)
               
             
           </h1>
@@ -322,7 +322,7 @@
                 
               
 
-              <time title="Created: 2019-03-05 17:56:09 / Modified: 18:52:22" itemprop="dateCreated datePublished" datetime="2019-03-05T17:56:09+08:00">2019-03-05</time>
+              <time title="Created: 2019-04-15 19:12:40 / Modified: 21:29:28" itemprop="dateCreated datePublished" datetime="2019-04-15T19:12:40+08:00">2019-04-15</time>
             
 
             
@@ -360,29 +360,24 @@
       
 
       
-        <p>想写一个fuzz框架，所以先来读一下著名的fuzz框架AFL的源码</p>
-<p>首先看下main函数，关键的部分是下面这三行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">find_as(argv[0]);</span><br><span class="line"></span><br><span class="line">edit_params(argc, argv);</span><br><span class="line"></span><br><span class="line">execvp(cc_params[0], (char**)cc_params);</span><br></pre></td></tr></table></figure>
-<h3 id="首先是find-as"><a href="#首先是find-as" class="headerlink" title="首先是find as"></a>首先是find as</h3><p>as是什么东西呢？</p>
-<blockquote>
-<p>如果了解编译过程，那么就知道把源代码编译成二进制，主要是经过”源代码”-&gt;”汇编代码”-&gt;”二进制”这样的过程。而将汇编代码编译成为二进制的工具，即为汇编器assembler。Linux系统下的常用汇编器是as。</p>
-</blockquote>
-<p>find_as里面详细的过程这里就不分析了</p>
-<h3 id="之后就是edit-params"><a href="#之后就是edit-params" class="headerlink" title="之后就是edit_params"></a>之后就是edit_params</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cc_params = ck_alloc((argc + 128) * sizeof(u8*));</span><br></pre></td></tr></table></figure>
-<p>首先是分配一块内存空间</p>
-<p>然后就是根据argv配置各种东西，包括环境变量的设置</p>
-<p>其中看到一些有趣的东西</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (!strcmp(cur, &quot;-fsanitize=address&quot;) ||</span><br><span class="line">       !strcmp(cur, &quot;-fsanitize=memory&quot;)) asan_set = 1;</span><br><span class="line"></span><br><span class="line">   if (strstr(cur, &quot;FORTIFY_SOURCE&quot;)) fortify_set = 1;</span><br><span class="line"></span><br><span class="line">   cc_params[cc_par_cnt++] = cur;</span><br></pre></td></tr></table></figure>
-<p>上网查了下资料，大概就是AFL可以使用sanitizer去更有效的查找memory access bugs</p>
-<p>但是同时也会带来性能的下降</p>
-<h3 id="最后是-execvp"><a href="#最后是-execvp" class="headerlink" title="最后是 execvp"></a>最后是 execvp</h3><p>这里可以打印一下参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc note.c -o www -B /home/test/afl-2.52b -g -O3 -funroll-loops -D__AFL_COMPILER=1 -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1</span><br></pre></td></tr></table></figure>
-<p>关键的一点就是 -B</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-B &lt;directory&gt;           Add &lt;directory&gt; to the compiler&apos;s search paths</span><br></pre></td></tr></table></figure>
-<p>大概就是汇编器的目录</p>
-<p>上面的find_as就是用来找这个的</p>
-<p>所以 afl-gcc就是gcc 的一个wraper,用来设置一下gcc的编译选项，还有就是把汇编器换成afl自己实现的一个汇编器</p>
-
+        <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>首先给下官方教程<br><a href="https://github.com/trailofbits/mcsema" target="_blank" rel="noopener">官方教程</a></p>
+<h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>首先把依赖都给装好了，因为我之前有装vs2017，所以要弄的东西没多少，这里详细可以看官方教程</p>
+<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>这里是下载源码，照着官方教程做就行</p>
+<h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>这里就有点小坑，主要是它说的不是很清楚</p>
+<p>这里比较方便的直接就是下载它给的Binaries，然后扔到它说的那个目录下面就行</p>
+<h4 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h4><p>首先执行VS2017目录下面的vcvars64.bat，然后再执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir remill_build</span><br><span class="line">cd remill_build</span><br><span class="line"></span><br><span class="line">cmake -G &quot;Visual Studio 15 2017&quot; -T llvm -A x64 -DCMAKE_BUILD_TYPE=Release -DLIBRARY_REPOSITORY_ROOT=C:\Projects\tob_libraries -DCMAKE_INSTALL_PREFIX=C:\ ..\remill</span><br><span class="line">cmake --build . --config Release -- /maxcpucount:4</span><br></pre></td></tr></table></figure>
+<p>这里默认当前目录下面有 remill，也就是第二步拉下来的源码</p>
+<h4 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake --build . --config Release --target install</span><br></pre></td></tr></table></figure>
+<p>执行完这个，再配完它说的PATH和PYTHONPATH，还有一个东西它没说，也就是后面会坑到的地方</p>
+<p>这里在 C:\mcsema\Lib\site-packages\protobuf-3.2.0-py3.5.egg\google这个目录下面，默认是没有<strong>init</strong>.py</p>
+<p>后面import这个模块的时候就会报错，所以在这个目录下面创建一个<strong>init</strong>.py即可</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="生成cfg"><a href="#生成cfg" class="headerlink" title="生成cfg"></a>生成cfg</h4><p>按照官方的教程的话，会先使用mcsema-disass来生成cfg，但是这里会有个迷之坑，执行之后死活说找不到文件，后面找了下，有一个<a href="https://github.com/trailofbits/mcsema/issues/497" target="_blank" rel="noopener">issue</a> 里面介绍了解决的办法</p>
+<p>我这里再简单说一下吧，其实mcsema-disass只是简单的包装了下命令行参数，我们可以直接输入包装之后的命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./ida64.exe -S&quot;C:\mcsema\Lib\site-packages\mcsema_disass-2.0-py3.5.egg\mcsema_disass\ida7\get_cfg.py --output C:\Users\XXXX\Desktop\xz.cfg --log_file C:\Users\XXXX\Desktop\xz.log --arch amd64 --os linux --entrypoint main&quot; C:\Users\XXXX\Desktop\ABC</span><br></pre></td></tr></table></figure>
+<p>上面就是一个样例，照着改就行,这里ida64.exe的路径根据自己的改就行</p>
+<h4 id="生成bitcode"><a href="#生成bitcode" class="headerlink" title="生成bitcode"></a>生成bitcode</h4><p>这里按照官方指引就行，这里给出我的一个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mcsema-lift-5.0.exe --os linux --arch amd64 --cfg .\a.cfg --output a.bc</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -409,8 +404,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/22/hitcon2017-ghost-in-the-heap-writeup/" rel="next" title="hitcon2017 ghost_in_the_heap writeup">
-                <i class="fa fa-chevron-left"></i> hitcon2017 ghost_in_the_heap writeup
+              <a href="/2019/04/12/fcd源码分析/" rel="next" title="fcd源码分析1">
+                <i class="fa fa-chevron-left"></i> fcd源码分析1
               </a>
             
           </div>
@@ -418,10 +413,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/06/AFL源码分析2——afl-as-c源码分析/" rel="prev" title="AFL源码分析2——afl-as.c源码分析">
-                AFL源码分析2——afl-as.c源码分析 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -531,7 +522,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先是find-as"><span class="nav-number">1.</span> <span class="nav-text">首先是find as</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#之后就是edit-params"><span class="nav-number">2.</span> <span class="nav-text">之后就是edit_params</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后是-execvp"><span class="nav-number">3.</span> <span class="nav-text">最后是 execvp</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步"><span class="nav-number">1.1.</span> <span class="nav-text">第一步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步"><span class="nav-number">1.2.</span> <span class="nav-text">第二步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步"><span class="nav-number">1.3.</span> <span class="nav-text">第三步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步"><span class="nav-number">1.4.</span> <span class="nav-text">第四步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第五步"><span class="nav-number">1.5.</span> <span class="nav-text">第五步</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">2.</span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成cfg"><span class="nav-number">2.1.</span> <span class="nav-text">生成cfg</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#生成bitcode"><span class="nav-number">2.2.</span> <span class="nav-text">生成bitcode</span></a></li></ol></li></ol></div>
             
 
           </div>
