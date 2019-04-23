@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前文再续，书接上一回（大误 打ddctf遇到一题感觉可以用fcd优化的题目，用fcd导出IR，结果多了超多东西，于是现在来仔细分析一下fcd是如何从汇编转换到IR的 上一篇文章分析到，是在createFunction这个函数来进行汇编-&amp;gt;IR之间的转换的，我们继续分析这个函数 TranslationContext::createFunction一开始创建一个函数12Function* fn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fcd源码分析2">
+<meta property="og:url" content="https://charlieleex.github.io/2019/04/22/fcd源码分析2/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="前文再续，书接上一回（大误 打ddctf遇到一题感觉可以用fcd优化的题目，用fcd导出IR，结果多了超多东西，于是现在来仔细分析一下fcd是如何从汇编转换到IR的 上一篇文章分析到，是在createFunction这个函数来进行汇编-&amp;gt;IR之间的转换的，我们继续分析这个函数 TranslationContext::createFunction一开始创建一个函数12Function* fn">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-04-23T13:28:56.453Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="fcd源码分析2">
+<meta name="twitter:description" content="前文再续，书接上一回（大误 打ddctf遇到一题感觉可以用fcd优化的题目，用fcd导出IR，结果多了超多东西，于是现在来仔细分析一下fcd是如何从汇编转换到IR的 上一篇文章分析到，是在createFunction这个函数来进行汇编-&amp;gt;IR之间的转换的，我们继续分析这个函数 TranslationContext::createFunction一开始创建一个函数12Function* fn">
+
+
+
+
+
+
+  <link rel="canonical" href="https://charlieleex.github.io/2019/04/22/fcd源码分析2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>fcd源码分析2 | PWN? PWN!</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PWN? PWN!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/04/22/fcd源码分析2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">fcd源码分析2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-22 09:56:53" itemprop="dateCreated datePublished" datetime="2019-04-22T09:56:53+08:00">2019-04-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-04-23 21:28:56" itemprop="dateModified" datetime="2019-04-23T21:28:56+08:00">2019-04-23</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前文再续，书接上一回（大误</p>
+<p>打ddctf遇到一题感觉可以用fcd优化的题目，用fcd导出IR，结果多了超多东西，于是现在来仔细分析一下fcd是如何从汇编转换到IR的</p>
+<p>上一篇文章分析到，是在createFunction这个函数来进行汇编-&gt;IR之间的转换的，我们继续分析这个函数</p>
+<h4 id="TranslationContext-createFunction"><a href="#TranslationContext-createFunction" class="headerlink" title="TranslationContext::createFunction"></a>TranslationContext::createFunction</h4><p>一开始创建一个函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Function* fn = functionMap-&gt;createFunction(baseAddress);</span><br><span class="line">	assert(fn != nullptr);</span><br></pre></td></tr></table></figure></p>
+<p>然后获取一些信息，看了下，是获取架构，还有如果是x86-64的话会获取rsp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auto targetInfo = TargetInfo::getTargetInfo(*module);</span><br></pre></td></tr></table></figure></p>
+<p>再下面是生成blockMap，获取函数入口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddressToBlock blockMap(*fn);</span><br><span class="line">BasicBlock* entry = &amp;fn-&gt;back();</span><br></pre></td></tr></table></figure>
+<p>获取函数参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Argument* registers = &amp;*fn-&gt;arg_begin();</span><br><span class="line">auto flags = new AllocaInst(irgen-&gt;getFlagsTy(), &quot;flags&quot;, entry);</span><br></pre></td></tr></table></figure></p>
+<p>这里略过一部分初始化的东西，直接到下面反汇编以及翻译IR的部分</p>
+<p>这里是拿取要反汇编的地址，动态调试了下，发现是循环取某个block里面的地址<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">while (blockMap.getOneStub(addressToDisassemble))</span><br></pre></td></tr></table></figure></p>
+<p>这里executable.map的逻辑简单描述为，返回一个指针，这个指针指向的是要反汇编的指令的内存（文件内容已经读取进内存了）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (auto begin = executable.map(addressToDisassemble))</span><br></pre></td></tr></table></figure></p>
+<p>这一行是利用capstone进行反汇编<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (cs-&gt;disassemble(inst.get(), begin, end, addressToDisassemble))</span><br></pre></td></tr></table></figure></p>
+<p>这里是获取下一条指令的地址<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">auto nextInstAddress = inst-&gt;address + inst-&gt;size;</span><br><span class="line">auto ipValue = ConstantInt::get(ipType, nextInstAddress);</span><br><span class="line">new StoreInst(ipValue, ipPointer, false, thisBlock);</span><br></pre></td></tr></table></figure></p>
+<p>然后根据指令的id去判断对应的opcode是否已经implement了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (Function* implementation = irgen-&gt;implementationFor(inst-&gt;id))</span><br></pre></td></tr></table></figure></p>
+<p>可以进函数里面看一下，是用一个vector里面拿取的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">llvm::Function* implementationFor(unsigned index)</span><br><span class="line">&#123;</span><br><span class="line">	return functionByOpcode.at(index);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>看着看着就有一个疑问，functionByOpcode里面的是从哪里来的呢？于是一步步追溯回去</p>
+<p>找到在class x86CodeGenerator 里面初始化化的一步<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define X86_INSTRUCTION_DECL(e, n) funcs[e] = getFunction(&quot;x86_&quot; #n);</span><br></pre></td></tr></table></figure></p>
+<p>然后印象中在x86.emulator.cpp里面看到过这个函数</p>
+<p>找了下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">X86_INSTRUCTION_DEF(add)</span><br><span class="line">&#123;</span><br><span class="line">	const cs_x86_op* source = &amp;inst-&gt;operands[1];</span><br><span class="line">	const cs_x86_op* destination = &amp;inst-&gt;operands[0];</span><br><span class="line">	uint64_t left = x86_read_destination_operand(destination, regs);</span><br><span class="line">	uint64_t right = x86_read_source_operand(source, regs);</span><br><span class="line">	</span><br><span class="line">	memset(flags, 0, sizeof *flags);</span><br><span class="line">	uint64_t result = x86_add(flags, source-&gt;size, left, right);</span><br><span class="line">	x86_write_destination_operand(destination, regs, result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里大概就是翻译每一个指令为IR吧，动态调试了下，实际会把x86.emulator.cpp定义的那些指令全部内联到x86CodeGenerator init那个函数里面</p>
+<p>继续回去translation_context，假如有实现这条指令，那么就将其inline到block中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// We have an implementation: inline it</span><br><span class="line">Constant* detailAsConstant = irgen-&gt;constantForDetail(*inst-&gt;detail);</span><br><span class="line">inliningParameters[1] = new GlobalVariable(*module, detailAsConstant-&gt;getType(), true, GlobalValue::PrivateLinkage, detailAsConstant);</span><br><span class="line">irgen-&gt;inlineFunction(fn, implementation, inliningParameters, *functionMap, blockMap, nextInstAddress);</span><br></pre></td></tr></table></figure></p>
+<p>我们来一条条分析上面的代码，首先是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Constant* detailAsConstant = irgen-&gt;constantForDetail(*inst-&gt;detail);</span><br></pre></td></tr></table></figure></p>
+<p>在constantForDetail里面，可以拿到指令的各种信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">for (size_t i = 0; i &lt; 8; i++)</span><br><span class="line">&#123;</span><br><span class="line">	vector&lt;Constant*&gt; structFields &#123;</span><br><span class="line">		ConstantInt::get(int32Ty, cs.operands[i].mem.segment),</span><br><span class="line">		ConstantInt::get(int32Ty, cs.operands[i].mem.base),</span><br><span class="line">		ConstantInt::get(int32Ty, cs.operands[i].mem.index),</span><br><span class="line">		ConstantInt::get(int32Ty, static_cast&lt;unsigned&gt;(cs.operands[i].mem.scale)),</span><br><span class="line">		ConstantInt::get(int64Ty, static_cast&lt;uint64_t&gt;(cs.operands[i].mem.disp)),</span><br><span class="line">	&#125;;</span><br><span class="line">	Constant* opMem = ConstantStruct::get(x86OpMem, structFields);</span><br><span class="line">	Constant* wrapper = ConstantStruct::get(x86OpMemWrapper, opMem, nullptr);</span><br><span class="line">	</span><br><span class="line">	structFields = &#123;</span><br><span class="line">		ConstantInt::get(int32Ty, cs.operands[i].type),</span><br><span class="line">		wrapper,</span><br><span class="line">		ConstantInt::get(int8Ty, cs.operands[i].size),</span><br><span class="line">		ConstantInt::get(int32Ty, cs.operands[i].avx_bcast),</span><br><span class="line">		ConstantInt::get(int8Ty, cs.operands[i].avx_zero_opmask),</span><br><span class="line">	&#125;;</span><br><span class="line">	operands.push_back(ConstantStruct::get(x86Op, structFields));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再下一行，这里是将上面拿到的指令的细节转换为GlobalVariable，存到inliningParameters[1]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inliningParameters[1] = new GlobalVariable(*module, detailAsConstant-&gt;getType(), true, GlobalValue::PrivateLinkage, detailAsConstant);</span><br></pre></td></tr></table></figure></p>
+<p>之后，这一行应该是把反汇编的结果转换为IR的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">irgen-&gt;inlineFunction(fn, implementation, inliningParameters, *functionMap, blockMap, nextInstAddress);</span><br></pre></td></tr></table></figure></p>
+<p>一开始复制了下参数什么的，然后再复制Function，然后把当前block和上一个block拼在一起，之后的llvm的东西不是很熟悉，有点看不懂</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">void CodeGenerator::inlineFunction(Function *target, Function *toInline, ArrayRef&lt;Value *&gt; parameters, AddressToFunction&amp; funcMap, AddressToBlock &amp;blockMap, uint64_t nextAddress)</span><br><span class="line">&#123;</span><br><span class="line">	assert(toInline-&gt;arg_size() == parameters.size());</span><br><span class="line">	Module&amp; targetModule = *target-&gt;getParent();</span><br><span class="line">	auto iter = toInline-&gt;arg_begin();</span><br><span class="line">	</span><br><span class="line">	ValueToValueMapTy valueMap;</span><br><span class="line">	getModuleLevelValueChanges(valueMap, targetModule);</span><br><span class="line">	for (Value* parameter : parameters)</span><br><span class="line">	&#123;</span><br><span class="line">		valueMap[&amp;*iter] = parameter;</span><br><span class="line">		++iter;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	SmallVector&lt;ReturnInst*, 1&gt; returns;</span><br><span class="line">	Function::iterator blockBeforeInstruction = target-&gt;back().getIterator();</span><br><span class="line">	CloneAndPruneFunctionInto(target, toInline, valueMap, true, returns);</span><br><span class="line">	</span><br><span class="line">	// Stitch blocks together</span><br><span class="line">	Function::iterator firstNewBlock = blockBeforeInstruction;</span><br><span class="line">	++firstNewBlock;</span><br><span class="line">	BranchInst::Create(&amp;*firstNewBlock, &amp;*blockBeforeInstruction);</span><br><span class="line">	</span><br><span class="line">	// Redirect returns</span><br><span class="line">	BasicBlock* nextBlock = blockMap.blockToInstruction(nextAddress);</span><br><span class="line">	for (auto ret : returns)</span><br><span class="line">	&#123;</span><br><span class="line">		BranchInst::Create(nextBlock, ret);</span><br><span class="line">		ret-&gt;eraseFromParent();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	resolveIntrinsics(*target, funcMap, blockMap);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再跟进resolveIntrinsics看一下，一堆遍历判断，最终到达replaceIntrinsic，但是感觉 auto call那里已经是翻译完成的了？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">virtual void resolveIntrinsics(llvm::Function&amp; targetFunction, AddressToFunction&amp; funcMap, AddressToBlock&amp; blockMap) override</span><br><span class="line">&#123;</span><br><span class="line">	Module&amp; module = *targetFunction.getParent();</span><br><span class="line">	for (Function* decl : declarations)</span><br><span class="line">	&#123;</span><br><span class="line">		StringRef name = decl-&gt;getName();</span><br><span class="line">		Function* matching = module.getFunction(name);</span><br><span class="line">		if (isIntrinsic(name))</span><br><span class="line">		&#123;</span><br><span class="line">			auto iter = matching-&gt;use_begin();</span><br><span class="line">			while (iter != matching-&gt;use_end())</span><br><span class="line">			&#123;</span><br><span class="line">				auto call = cast&lt;CallInst&gt;(iter-&gt;getUser());</span><br><span class="line">				++iter;</span><br><span class="line">				replaceIntrinsic(funcMap, blockMap, name, call);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后到replaceIntrinsic，这里只会处理[“x86_jump_intrin”,”x86_call_intrin”,”x86_ret_intrin”,”x86_read_mem”,”x86_write_mem”]这五类指令，但是llvm的知识太少，感觉也看不太懂这里干了什么<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void replaceIntrinsic(AddressToFunction&amp; funcMap, AddressToBlock&amp; blockMap, StringRef name, CallInst* translated)</span><br><span class="line">&#123;</span><br><span class="line">	if (name == &quot;x86_jump_intrin&quot;)</span><br><span class="line">	&#123;</span><br><span class="line">		if (auto constantDestination = dyn_cast&lt;ConstantInt&gt;(translated-&gt;getOperand(2)))</span><br><span class="line">		&#123;</span><br><span class="line">			BasicBlock* parent = translated-&gt;getParent();</span><br><span class="line">			BasicBlock* remainder = parent-&gt;splitBasicBlock(translated);</span><br><span class="line">			auto terminator = parent-&gt;getTerminator();</span><br><span class="line">			</span><br><span class="line">			uint64_t dest = constantDestination-&gt;getLimitedValue();</span><br><span class="line">			BasicBlock* destination = blockMap.blockToInstruction(dest);</span><br><span class="line">			BranchInst::Create(destination, terminator);</span><br><span class="line">			terminator-&gt;eraseFromParent();</span><br><span class="line">			remainder-&gt;eraseFromParent();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else if (name == &quot;x86_call_intrin&quot;)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/15/mcsema安装教程-踩坑记录/" rel="next" title="windows下mcsema安装及使用教程(踩坑记录)">
+                <i class="fa fa-chevron-left"></i> windows下mcsema安装及使用教程(踩坑记录)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Charlie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TranslationContext-createFunction"><span class="nav-number">1.</span> <span class="nav-text">TranslationContext::createFunction</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Charlie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
