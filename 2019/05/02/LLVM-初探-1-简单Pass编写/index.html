@@ -110,26 +110,26 @@
 
   <meta name="description" content="环境配置llvm版本4.0.0，使用官网的prebuilt binary安装 跟着llvm-cookbook的教程做了下，发现教程那种方法需要重新编译llvm源码 于是上网搜了下，找到一个repo llvm-pass-skeleton，可以在不重新编译全部源码的情况下生成Pass FuncBlockCount PassPass源码如下1234567891011121314151617#includ">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LLVM Pass 初探(1) 简单Pass编写">
-<meta property="og:url" content="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/index.html">
+<meta property="og:title" content="LLVM 初探(1) 简单Pass编写">
+<meta property="og:url" content="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="环境配置llvm版本4.0.0，使用官网的prebuilt binary安装 跟着llvm-cookbook的教程做了下，发现教程那种方法需要重新编译llvm源码 于是上网搜了下，找到一个repo llvm-pass-skeleton，可以在不重新编译全部源码的情况下生成Pass FuncBlockCount PassPass源码如下1234567891011121314151617#includ">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t2.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t3.png">
-<meta property="og:updated_time" content="2019-05-02T13:18:43.735Z">
+<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/t2.png">
+<meta property="og:image" content="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/t3.png">
+<meta property="og:updated_time" content="2019-05-03T05:20:49.405Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LLVM Pass 初探(1) 简单Pass编写">
+<meta name="twitter:title" content="LLVM 初探(1) 简单Pass编写">
 <meta name="twitter:description" content="环境配置llvm版本4.0.0，使用官网的prebuilt binary安装 跟着llvm-cookbook的教程做了下，发现教程那种方法需要重新编译llvm源码 于是上网搜了下，找到一个repo llvm-pass-skeleton，可以在不重新编译全部源码的情况下生成Pass FuncBlockCount PassPass源码如下1234567891011121314151617#includ">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t1.png">
+<meta name="twitter:image" content="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/"/>
 
 
 
@@ -139,7 +139,7 @@
   };
 </script>
 
-  <title>LLVM Pass 初探(1) 简单Pass编写 | PWN? PWN!</title>
+  <title>LLVM 初探(1) 简单Pass编写 | PWN? PWN!</title>
   
 
 
@@ -284,7 +284,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/02/LLVM-初探-1-简单Pass编写/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -301,7 +301,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">LLVM Pass 初探(1) 简单Pass编写
+          <h1 class="post-title" itemprop="name headline">LLVM 初探(1) 简单Pass编写
               
             
           </h1>
@@ -326,12 +326,24 @@
                 
               
 
-              <time title="Created: 2019-05-02 16:00:12 / Modified: 21:18:43" itemprop="dateCreated datePublished" datetime="2019-05-02T16:00:12+08:00">2019-05-02</time>
+              <time title="Created: 2019-05-02 16:00:12" itemprop="dateCreated datePublished" datetime="2019-05-02T16:00:12+08:00">2019-05-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-05-03 13:20:49" itemprop="dateModified" datetime="2019-05-03T13:20:49+08:00">2019-05-03</time>
               
             
           </span>
@@ -373,7 +385,7 @@
 <p>使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang -O0 -S -emit-llvm sample.c -o sample.ll</span><br></pre></td></tr></table></figure></p>
 <p>生成IR</p>
 <p>然后用opt运行Pass，结果如下，输出函数名字</p>
-<p><img src="/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t1.png" alt=""></p>
+<p><img src="/2019/05/02/LLVM-初探-1-简单Pass编写/t1.png" alt=""></p>
 <h3 id="FuncBlockCount-Pass-v2"><a href="#FuncBlockCount-Pass-v2" class="headerlink" title="FuncBlockCount Pass v2"></a>FuncBlockCount Pass v2</h3><p>源码如下</p>
 <p>这里提一下getAnalysisUsage这个函数，在llvm cookbook里面并没有提到，但是如果没有加这个函数的话，后面用opt跑的时候会报错</p>
 <p>至于这个函数的作用，可以看<a href="https://www.jianshu.com/p/b280c8d67909" target="_blank" rel="noopener">【LLVM】Pass之间的依赖</a></p>
@@ -382,14 +394,14 @@
 <p>使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang –O0 –S –emit-llvm sample.c –o sample.ll</span><br></pre></td></tr></table></figure></p>
 <p>来生成IR</p>
 <p>输出的结果</p>
-<p><img src="/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t2.png" alt=""></p>
+<p><img src="/2019/05/02/LLVM-初探-1-简单Pass编写/t2.png" alt=""></p>
 <h3 id="opcodeCounter"><a href="#opcodeCounter" class="headerlink" title="opcodeCounter"></a>opcodeCounter</h3><p>源码如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">#define DEBUG_TYPE &quot;opcodeCounter&quot;</span><br><span class="line">#include &quot;llvm/Pass.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Function.h&quot;</span><br><span class="line">#include &quot;llvm/Support/raw_ostream.h&quot;</span><br><span class="line">#include &lt;map&gt;</span><br><span class="line">using namespace llvm;</span><br><span class="line"></span><br><span class="line">namespace &#123;</span><br><span class="line"></span><br><span class="line">struct CountOpcode: public FunctionPass&#123;</span><br><span class="line">    std::map&lt;std::string, int&gt; opcodeCounter;</span><br><span class="line">    static char ID;</span><br><span class="line">    CountOpcode() : FunctionPass(ID) &#123;&#125;</span><br><span class="line">    virtual bool runOnFunction (Function&amp; F)&#123;</span><br><span class="line">        llvm::outs() &lt;&lt; &quot;Function &quot; &lt;&lt;F.getName() &lt;&lt; &quot;\n&quot;;</span><br><span class="line">        for( Function::iterator bb = F.begin(), e = F.end();bb!=e;++bb)&#123;</span><br><span class="line">            for(BasicBlock::iterator i = bb-&gt;begin(),ee = bb-&gt;end();i!=ee;++i)&#123;</span><br><span class="line">                if(opcodeCounter.find(i-&gt;getOpcodeName()) == opcodeCounter.end())&#123;</span><br><span class="line">                    opcodeCounter[i-&gt;getOpcodeName()] = 1;</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    opcodeCounter[i-&gt;getOpcodeName()] += 1;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        std::map&lt;std::string, int&gt;::iterator i = opcodeCounter.begin();</span><br><span class="line">        std::map&lt;std::string, int&gt;::iterator e = opcodeCounter.end();</span><br><span class="line">        while(i!=e)&#123;</span><br><span class="line">            llvm::outs()&lt;&lt;i-&gt;first &lt;&lt;&quot;: &quot;&lt;&lt;i-&gt;second&lt;&lt;&quot;\n&quot;;</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">        llvm::outs()&lt;&lt;&quot;\n&quot;;</span><br><span class="line">        opcodeCounter.clear();</span><br><span class="line">        return false;</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char CountOpcode::ID = 0;</span><br><span class="line">static RegisterPass&lt;CountOpcode&gt; X(&quot;opcodeCounter&quot;,&quot;Count the number of opcode in a functions&quot;);</span><br></pre></td></tr></table></figure>
 <p>这个Pass是统计各个opcode的数量</p>
 <p>测试代码 testcode.c</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int func(int a,int b)&#123;</span><br><span class="line">    int sum = 0;</span><br><span class="line">    int iter;</span><br><span class="line">    for(iter = 0; iter&lt;a;iter++) &#123;</span><br><span class="line">        int iter1;</span><br><span class="line">        for(iter1 = 0; iter1&lt;b;iter1++)&#123;</span><br><span class="line">            sum += iter&gt; iter1 ? 1: 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>运行结果</p>
-<p><img src="/2019/05/02/LLVM-Pass-初探-1-简单Pass编写/t3.png" alt=""></p>
+<p><img src="/2019/05/02/LLVM-初探-1-简单Pass编写/t3.png" alt=""></p>
 
       
     </div>
@@ -499,7 +511,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">28</span>
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

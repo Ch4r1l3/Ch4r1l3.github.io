@@ -110,25 +110,25 @@
 
   <meta name="description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LLVM Pass 初探(2) Optimization Pass 编写">
-<meta property="og:url" content="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/index.html">
+<meta property="og:title" content="LLVM 初探(2) Optimization Pass 编写">
+<meta property="og:url" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/t2.png">
-<meta property="og:updated_time" content="2019-05-03T04:38:31.980Z">
+<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
+<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t2.png">
+<meta property="og:updated_time" content="2019-05-03T05:21:22.074Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LLVM Pass 初探(2) Optimization Pass 编写">
+<meta name="twitter:title" content="LLVM 初探(2) Optimization Pass 编写">
 <meta name="twitter:description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/t1.png">
+<meta name="twitter:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/"/>
 
 
 
@@ -138,7 +138,7 @@
   };
 </script>
 
-  <title>LLVM Pass 初探(2) Optimization Pass 编写 | PWN? PWN!</title>
+  <title>LLVM 初探(2) Optimization Pass 编写 | PWN? PWN!</title>
   
 
 
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">LLVM Pass 初探(2) Optimization Pass 编写
+          <h1 class="post-title" itemprop="name headline">LLVM 初探(2) Optimization Pass 编写
               
             
           </h1>
@@ -325,7 +325,7 @@
                 
               
 
-              <time title="Created: 2019-05-03 09:37:07 / Modified: 12:38:31" itemprop="dateCreated datePublished" datetime="2019-05-03T09:37:07+08:00">2019-05-03</time>
+              <time title="Created: 2019-05-03 09:37:07 / Modified: 13:21:22" itemprop="dateCreated datePublished" datetime="2019-05-03T09:37:07+08:00">2019-05-03</time>
             
 
             
@@ -367,14 +367,14 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;llvm/Transforms/Scalar.h&quot;</span><br><span class="line">#include &quot;llvm/ADT/DepthFirstIterator.h&quot;</span><br><span class="line">#include &quot;llvm/ADT/SmallPtrSet.h&quot;</span><br><span class="line">#include &quot;llvm/ADT/SmallVector.h&quot;</span><br><span class="line">#include &quot;llvm/ADT/Statistic.h&quot;</span><br><span class="line">#include &quot;llvm/IR/BasicBlock.h&quot;</span><br><span class="line">#include &quot;llvm/IR/CFG.h&quot;</span><br><span class="line">#include &quot;llvm/IR/InstIterator.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Instructions.h&quot;</span><br><span class="line">#include &quot;llvm/IR/IntrinsicInst.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Function.h&quot;</span><br><span class="line">#include &quot;llvm/Pass.h&quot;</span><br><span class="line">using namespace llvm;</span><br><span class="line"></span><br><span class="line">namespace &#123;</span><br><span class="line"></span><br><span class="line">struct MYADCE : public FunctionPass &#123;</span><br><span class="line">    static char ID;</span><br><span class="line">    MYADCE() : FunctionPass(ID) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    bool runOnFunction(Function&amp; F) override;</span><br><span class="line">    void getAnalysisUsage(AnalysisUsage&amp; AU) const override&#123;</span><br><span class="line">        AU.setPreservesCFG();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char MYADCE::ID = 0;</span><br><span class="line"></span><br><span class="line">bool MYADCE::runOnFunction(Function&amp; F) &#123;</span><br><span class="line">    if (skipFunction(F))</span><br><span class="line">        return false;</span><br><span class="line">    SmallPtrSet&lt;Instruction*, 32&gt; Alive;</span><br><span class="line">    SmallVector&lt;Instruction*, 128&gt; Worklist;</span><br><span class="line">    for(Instruction &amp; I:instructions(F))&#123;</span><br><span class="line">        if(isa&lt;TerminatorInst&gt;(I) || isa&lt;DbgInfoIntrinsic&gt;(I)</span><br><span class="line">            || isa&lt;LandingPadInst&gt;(I) || I.mayHaveSideEffects())&#123;</span><br><span class="line">            Alive.insert(&amp;I);</span><br><span class="line">            Worklist.push_back(&amp;I);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    while(!Worklist.empty())&#123;</span><br><span class="line">        Instruction* Curr = Worklist.pop_back_val();</span><br><span class="line">        for( Use &amp;OI : Curr-&gt;operands()) &#123;</span><br><span class="line">            if (Instruction* Inst = dyn_cast&lt;Instruction&gt;(OI))</span><br><span class="line">                if(Alive.insert(Inst).second)</span><br><span class="line">                    Worklist.push_back(Inst);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    for(Instruction &amp;I : instructions(F))&#123;</span><br><span class="line">        if(!Alive.count(&amp;I))&#123;</span><br><span class="line">            Worklist.push_back(&amp;I);</span><br><span class="line">            I.dropAllReferences();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    for(Instruction* I : Worklist)&#123;</span><br><span class="line">        I-&gt;eraseFromParent();</span><br><span class="line">    &#125;</span><br><span class="line">    return !Worklist.empty();</span><br><span class="line">    </span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line">static RegisterPass&lt;MYADCE&gt; X(&quot;myadce&quot;, &quot;My Aggressive Dead Code Elimination&quot;, false, false);</span><br></pre></td></tr></table></figure>
 <p>测试用IR如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">declare i32 @strlen(i8*) readonly nounwind</span><br><span class="line">define void @test() &#123;</span><br><span class="line">    call i32 @strlen( i8* null )</span><br><span class="line">    ret void</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/t1.png" alt=""></p>
+<p><img src="/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png" alt=""></p>
 <p>Pass首先是遍历Instruction，寻找这4类Instruction：TerminatorInst，DbgInfoIntrinsic，LandingPadInst，mayHaveSideEffects，也就是最后有意义的指令，然后用bfs反向遍历回去，类似于污点传播的感觉，把所有有意义的指令都插入到Alive里面，最后把不在Alive里面的指令都去除掉</p>
 <h3 id="Inlining-Transformation-Pass"><a href="#Inlining-Transformation-Pass" class="headerlink" title="Inlining Transformation Pass"></a>Inlining Transformation Pass</h3><p>源码如下，因为cookbook的都是旧版本的，所以我下了源码，用lib/Transforms/IPO/InlineSimple.cpp魔改了下cookbook的例子</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;llvm/Transforms/IPO.h&quot;</span><br><span class="line">#include &quot;llvm/ADT/SmallPtrSet.h&quot;</span><br><span class="line">#include &quot;llvm/Analysis/AliasAnalysis.h&quot;</span><br><span class="line">#include &quot;llvm/Analysis/AssumptionCache.h&quot;</span><br><span class="line">#include &quot;llvm/Analysis/CallGraph.h&quot;</span><br><span class="line">#include &quot;llvm/Analysis/InlineCost.h&quot;</span><br><span class="line">#include &quot;llvm/IR/CallSite.h&quot;</span><br><span class="line">#include &quot;llvm/IR/CallingConv.h&quot;</span><br><span class="line">#include &quot;llvm/IR/DataLayout.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Instructions.h&quot;</span><br><span class="line">#include &quot;llvm/IR/IntrinsicInst.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Module.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Type.h&quot;</span><br><span class="line">#include &quot;llvm/Transforms/IPO/Inliner.h&quot;</span><br><span class="line"></span><br><span class="line">using namespace llvm;</span><br><span class="line">namespace &#123;</span><br><span class="line"></span><br><span class="line">class MyInliner : public LegacyInlinerBase &#123;</span><br><span class="line">    </span><br><span class="line">    public:</span><br><span class="line">    MyInliner(): LegacyInlinerBase(ID) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    static char ID;</span><br><span class="line">    </span><br><span class="line">    InlineCost getInlineCost(CallSite CS) override;</span><br><span class="line">    void getAnalysisUsage(AnalysisUsage &amp;AU) const override;</span><br><span class="line"></span><br><span class="line">    bool runOnSCC(CallGraphSCC &amp; SCC) override;</span><br><span class="line">    bool doFinalization(CallGraph &amp;CG) override &#123;</span><br><span class="line">        return removeDeadFunctions(CG,true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char MyInliner::ID = 0;</span><br><span class="line">InlineCost MyInliner::getInlineCost(CallSite CS)&#123;</span><br><span class="line">    Function* Callee = CS.getCalledFunction();</span><br><span class="line">    if(Callee &amp;&amp; !Callee-&gt;isDeclaration() &amp;&amp; </span><br><span class="line">        CS.hasFnAttr(Attribute::AlwaysInline))</span><br><span class="line">        return InlineCost::getAlways();</span><br><span class="line">    return InlineCost::getNever();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">bool MyInliner::runOnSCC(CallGraphSCC &amp; SCC) &#123;</span><br><span class="line">    return LegacyInlinerBase::runOnSCC(SCC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void MyInliner::getAnalysisUsage(AnalysisUsage &amp;AU) const &#123;</span><br><span class="line">    AU.addRequired&lt;TargetTransformInfoWrapperPass&gt;();</span><br><span class="line">    LegacyInlinerBase::getAnalysisUsage(AU);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static RegisterPass&lt;MyInliner&gt; X(&quot;myinliner&quot;, &quot;My Inliner&quot;, false, false);</span><br></pre></td></tr></table></figure>
 <p>测试IR如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">define i32 @inner1() alwaysinline &#123;</span><br><span class="line">    ret i32 1</span><br><span class="line">&#125;</span><br><span class="line">define i32 @outer1() &#123;</span><br><span class="line">    %r = call i32 @inner1()</span><br><span class="line">    ret i32 %r</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>运行效果</p>
-<p><img src="/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/t2.png" alt=""></p>
+<p><img src="/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t2.png" alt=""></p>
 <p>这个Pass是将标志了alwaysinline的函数全部都内联，其他都不内联</p>
 
       
@@ -403,8 +403,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/02/LLVM-初探-1-简单Pass编写/" rel="next" title="LLVM 初探(1) 简单Pass编写">
-                <i class="fa fa-chevron-left"></i> LLVM 初探(1) 简单Pass编写
+              <a href="/2019/05/03/LLVM-Pass-初探-2-Optimization-Pass-编写/" rel="next" title="LLVM Pass 初探(2) Optimization Pass 编写">
+                <i class="fa fa-chevron-left"></i> LLVM Pass 初探(2) Optimization Pass 编写
               </a>
             
           </div>
@@ -412,10 +412,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/" rel="prev" title="LLVM 初探(2) Optimization Pass 编写">
-                LLVM 初探(2) Optimization Pass 编写 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
