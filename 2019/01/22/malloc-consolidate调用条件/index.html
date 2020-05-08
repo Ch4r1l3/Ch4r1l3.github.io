@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,25 +111,25 @@
   <meta name="description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
 <meta property="og:type" content="article">
 <meta property="og:title" content="malloc_consolidate调用条件">
-<meta property="og:url" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t2.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t3.png">
-<meta property="og:updated_time" content="2019-01-22T03:10:25.446Z">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/t2.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/t3.png">
+<meta property="og:updated_time" content="2019-01-22T03:10:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="malloc_consolidate调用条件">
 <meta name="twitter:description" content="很久没写博客了，现在有空更新一下吧 最近在做hitcon 2017的题，碰到一题是利用unsorted bin attack 攻击到stdin的struct上面的，但是利用方法怎么也想不到 于是看了下题解，发现利用了malloc_consolidate，于是去看下源码，找下这个函数被调用的条件，因为我们在一般的pwn里面只有malloc和free，所以我只讲一下在这两个函数里面触发的条件 1. m">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/"/>
 
 
 
@@ -175,7 +175,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -186,7 +186,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -284,7 +284,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/01/22/malloc-consolidate调用条件/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2019/01/22/malloc-consolidate调用条件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -326,7 +326,7 @@
                 
               
 
-              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:10:25" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
+              <time title="Created: 2019-01-22 10:29:08 / Modified: 11:10:24" itemprop="dateCreated datePublished" datetime="2019-01-22T10:29:08+08:00">2019-01-22</time>
             
 
             
@@ -493,7 +493,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -553,7 +553,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -684,24 +684,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

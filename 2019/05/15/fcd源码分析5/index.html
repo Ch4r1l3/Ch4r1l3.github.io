@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,11 +111,11 @@
   <meta name="description" content="我们继续来分析fcd源码，之前讲到argrec和sroa这两个优化Pass，接下来我们讲的是intnarrowing和signext这两个优化Pass intnarrowingintnarrowing这个Pass从名字上就可以看出其作用，就是将一些指令中的使用过大的寄存器，将其减少，下面给一个简单的例子 1or rax, 0x12 可以转变为 1or al,0x12 这里并不完全正常，因为真正的目">
 <meta property="og:type" content="article">
 <meta property="og:title" content="fcd源码分析5">
-<meta property="og:url" content="https://charlieleex.github.io/2019/05/15/fcd源码分析5/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2019/05/15/fcd源码分析5/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="我们继续来分析fcd源码，之前讲到argrec和sroa这两个优化Pass，接下来我们讲的是intnarrowing和signext这两个优化Pass intnarrowingintnarrowing这个Pass从名字上就可以看出其作用，就是将一些指令中的使用过大的寄存器，将其减少，下面给一个简单的例子 1or rax, 0x12 可以转变为 1or al,0x12 这里并不完全正常，因为真正的目">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-05-17T09:52:29.643Z">
+<meta property="og:updated_time" content="2019-05-17T09:52:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="fcd源码分析5">
 <meta name="twitter:description" content="我们继续来分析fcd源码，之前讲到argrec和sroa这两个优化Pass，接下来我们讲的是intnarrowing和signext这两个优化Pass intnarrowingintnarrowing这个Pass从名字上就可以看出其作用，就是将一些指令中的使用过大的寄存器，将其减少，下面给一个简单的例子 1or rax, 0x12 可以转变为 1or al,0x12 这里并不完全正常，因为真正的目">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/05/15/fcd源码分析5/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2019/05/15/fcd源码分析5/"/>
 
 
 
@@ -171,7 +171,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -182,7 +182,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/15/fcd源码分析5/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2019/05/15/fcd源码分析5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -339,7 +339,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-05-17 17:52:29" itemprop="dateModified" datetime="2019-05-17T17:52:29+08:00">2019-05-17</time>
+                <time title="Modified: 2019-05-17 17:52:28" itemprop="dateModified" datetime="2019-05-17T17:52:28+08:00">2019-05-17</time>
               
             
           </span>
@@ -501,7 +501,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -561,7 +561,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -692,24 +692,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,23 +111,23 @@
   <meta name="description" content="首先配置下环境，强烈推荐在ubuntu下弄，在kali下面弄各种奇葩的错误……… 首先配置的话我是按照dalao的教程来做的 dalao的教程 但是其实编译内核的那个环节可以省略，因为可以直接下载 利用 1sudo apt search linux-image- 可以搜索到各种版本的内核 然后再利用 1apt download xxxx 来把那个内核给下载下来 busybox那里就按照dalao的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux kernel pwn 初探(1)  环境配置">
-<meta property="og:url" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-1/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-1/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="首先配置下环境，强烈推荐在ubuntu下弄，在kali下面弄各种奇葩的错误……… 首先配置的话我是按照dalao的教程来做的 dalao的教程 但是其实编译内核的那个环节可以省略，因为可以直接下载 利用 1sudo apt search linux-image- 可以搜索到各种版本的内核 然后再利用 1apt download xxxx 来把那个内核给下载下来 busybox那里就按照dalao的">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-1/t1.png">
-<meta property="og:updated_time" content="2018-10-09T08:17:44.207Z">
+<meta property="og:image" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-1/t1.png">
+<meta property="og:updated_time" content="2018-10-09T08:17:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux kernel pwn 初探(1)  环境配置">
 <meta name="twitter:description" content="首先配置下环境，强烈推荐在ubuntu下弄，在kali下面弄各种奇葩的错误……… 首先配置的话我是按照dalao的教程来做的 dalao的教程 但是其实编译内核的那个环节可以省略，因为可以直接下载 利用 1sudo apt search linux-image- 可以搜索到各种版本的内核 然后再利用 1apt download xxxx 来把那个内核给下载下来 busybox那里就按照dalao的">
-<meta name="twitter:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-1/t1.png">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-1/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-1/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-1/"/>
 
 
 
@@ -173,7 +173,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -184,7 +184,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -282,7 +282,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-1/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -504,7 +504,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -548,7 +548,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -679,24 +679,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,24 +111,24 @@
   <meta name="description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LLVM 初探(2) Optimization Pass 编写">
-<meta property="og:url" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t2.png">
-<meta property="og:updated_time" content="2019-05-03T11:59:39.122Z">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t2.png">
+<meta property="og:updated_time" content="2019-05-03T11:59:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LLVM 初探(2) Optimization Pass 编写">
 <meta name="twitter:description" content="Dead code elimination Pass源码如下，发现llvm cookbook用的api挺老的，把旧的api换成新的了 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263#include &amp;quot;l">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/"/>
 
 
 
@@ -174,7 +174,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -185,7 +185,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2019/05/03/LLVM-初探-2-Optimization-Pass-编写/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -325,7 +325,7 @@
                 
               
 
-              <time title="Created: 2019-05-03 09:37:07 / Modified: 19:59:39" itemprop="dateCreated datePublished" datetime="2019-05-03T09:37:07+08:00">2019-05-03</time>
+              <time title="Created: 2019-05-03 09:37:07 / Modified: 19:59:38" itemprop="dateCreated datePublished" datetime="2019-05-03T09:37:07+08:00">2019-05-03</time>
             
 
             
@@ -485,7 +485,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -545,7 +545,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -676,24 +676,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

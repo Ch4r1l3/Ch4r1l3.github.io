@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,11 +111,11 @@
   <meta name="description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux kernel pwn 初探(4) ret2usr">
-<meta property="og:url" content="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2018/10/09/linux-kernel-pwn-初探-4/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-10-09T14:07:03.435Z">
+<meta property="og:updated_time" content="2018-10-09T14:07:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux kernel pwn 初探(4) ret2usr">
 <meta name="twitter:description" content="还是同一道题，这次用不同的做法 看到题目没开smep，所以就试着用ret2usr，网上搜了一圈，好像也没什么资料 但是有比较粗略的介绍说是劫持控制流到用户空间，于是测试了下，发现还真的能直接返回 能直接返回那就不用辛辛苦苦的去构造rop链了 直接调用commit_creds(prepare_kernel_cred (0));就完事了 poc如下 12345678910111213141516171">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2018/10/09/linux-kernel-pwn-初探-4/"/>
 
 
 
@@ -171,7 +171,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -182,7 +182,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/10/09/linux-kernel-pwn-初探-4/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2018/10/09/linux-kernel-pwn-初探-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -322,7 +322,7 @@
                 
               
 
-              <time title="Created: 2018-10-09 21:52:25 / Modified: 22:07:03" itemprop="dateCreated datePublished" datetime="2018-10-09T21:52:25+08:00">2018-10-09</time>
+              <time title="Created: 2018-10-09 21:52:25 / Modified: 22:07:02" itemprop="dateCreated datePublished" datetime="2018-10-09T21:52:25+08:00">2018-10-09</time>
             
 
             
@@ -466,7 +466,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -510,7 +510,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -641,24 +641,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

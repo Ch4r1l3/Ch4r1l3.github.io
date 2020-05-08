@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,24 +111,24 @@
   <meta name="description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux kernel pwn 初探(2)  NULL Defence">
-<meta property="og:url" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t2.png">
-<meta property="og:updated_time" content="2018-10-09T08:18:00.765Z">
+<meta property="og:image" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/t2.png">
+<meta property="og:updated_time" content="2018-10-09T08:18:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux kernel pwn 初探(2)  NULL Defence">
 <meta name="twitter:description" content="这篇文章主要介绍的是NULL defence，这个古老的kernel漏洞测试了半天，在4.15的kernel弄了半天，结果发现并不支持RIP为0，只好转而去弄2.6的kernel 这个kernel不能直接下载，只能编译，然后在我的ubuntu 16.04那里编译了半天，发现并不行，可能gcc版本太高了 于是上服务器上pull了ubuntu 14.04的Docker，在上面编译，发现一点事情都没有…">
-<meta name="twitter:image" content="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/"/>
 
 
 
@@ -174,7 +174,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -185,7 +185,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/10/07/linux-kernel-pwn-初探-2/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2018/10/07/linux-kernel-pwn-初探-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -510,7 +510,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -570,7 +570,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -701,24 +701,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

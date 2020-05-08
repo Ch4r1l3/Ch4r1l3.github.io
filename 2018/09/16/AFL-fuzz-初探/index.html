@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,11 +111,11 @@
   <meta name="description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AFL fuzz 初探">
-<meta property="og:url" content="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2018/09/16/AFL-fuzz-初探/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-09-26T02:16:53.591Z">
+<meta property="og:updated_time" content="2018-09-26T02:16:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AFL fuzz 初探">
 <meta name="twitter:description" content="这里给一个比较好的入门的项目 afl-training 这个项目能让你初步熟悉afl-fuzz 然后可以自己写个栈溢出的漏洞来熟悉一下afl 虽然测试了一下，找到漏洞需要半小时…….可能我栈开大了……. 然后又测试了一下tcpdump…….10小时一个crash都没出…….">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2018/09/16/AFL-fuzz-初探/"/>
 
 
 
@@ -171,7 +171,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -182,7 +182,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2018/09/16/AFL-fuzz-初探/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2018/09/16/AFL-fuzz-初探/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -339,7 +339,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-09-26 10:16:53" itemprop="dateModified" datetime="2018-09-26T10:16:53+08:00">2018-09-26</time>
+                <time title="Modified: 2018-09-26 10:16:52" itemprop="dateModified" datetime="2018-09-26T10:16:52+08:00">2018-09-26</time>
               
             
           </span>
@@ -478,7 +478,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -522,7 +522,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -653,24 +653,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
 
 
 

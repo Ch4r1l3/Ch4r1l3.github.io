@@ -16,7 +16,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+  <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
 <meta name="theme-color" content="#222">
@@ -111,29 +111,29 @@
   <meta name="description" content="这篇文章只是一些对论文的总结，以便看起来容易理解一点，可能有点翻译腔，大概看得懂就行 原论文链接NEUZZ: Efficient Fuzzing with Neural Program Smoothing introduction由于其简单和低额外开销，fuzz在发现真实应用漏洞中取得了很大的成就。虽然很多fuzzer都声称自己能有非常好的效果，但是很多时候，特别在面对大型程序的时候，经常陷入不断">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NEUZZ 一篇论文的翻译">
-<meta property="og:url" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/index.html">
+<meta property="og:url" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/index.html">
 <meta property="og:site_name" content="PWN? PWN!">
 <meta property="og:description" content="这篇文章只是一些对论文的总结，以便看起来容易理解一点，可能有点翻译腔，大概看得懂就行 原论文链接NEUZZ: Efficient Fuzzing with Neural Program Smoothing introduction由于其简单和低额外开销，fuzz在发现真实应用漏洞中取得了很大的成就。虽然很多fuzzer都声称自己能有非常好的效果，但是很多时候，特别在面对大型程序的时候，经常陷入不断">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t1.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t2.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t3.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t4.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t5.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t6.png">
-<meta property="og:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t7.png">
-<meta property="og:updated_time" content="2019-03-08T13:19:46.540Z">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t1.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t2.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t3.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t4.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t5.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t6.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t7.png">
+<meta property="og:updated_time" content="2019-03-08T13:19:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NEUZZ 一篇论文的翻译">
 <meta name="twitter:description" content="这篇文章只是一些对论文的总结，以便看起来容易理解一点，可能有点翻译腔，大概看得懂就行 原论文链接NEUZZ: Efficient Fuzzing with Neural Program Smoothing introduction由于其简单和低额外开销，fuzz在发现真实应用漏洞中取得了很大的成就。虽然很多fuzzer都声称自己能有非常好的效果，但是很多时候，特别在面对大型程序的时候，经常陷入不断">
-<meta name="twitter:image" content="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t1.png">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/t1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/"/>
+  <link rel="canonical" href="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/"/>
 
 
 
@@ -179,7 +179,7 @@
       .logo-line-after i { right: initial; }
     }
   </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</noscript>
 
 </head>
 
@@ -190,7 +190,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://charlieleex.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2019/03/08/NEUZZ-Efficient-Fuzzing-with-Neural-Program-Smoothing-翻译/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charlie">
@@ -535,7 +535,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -595,7 +595,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -784,24 +784,7 @@
         }
     });
 </script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     
   
