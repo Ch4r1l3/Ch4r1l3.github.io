@@ -193,6 +193,31 @@ https://info.armis.com/rs/645-PDC-047/images/BlueBorne%20Technical%20White%20Pap
 
 #### 源代码分析
 
+```
+    case BNEP_FRAME_CONTROL:
+      ctrl_type = *p;
+      p = bnep_process_control_packet(p_bcb, p, &rem_len, false);
+      if (ctrl_type == BNEP_SETUP_CONNECTION_REQUEST_MSG &&
+          p_bcb->con_state != BNEP_STATE_CONNECTED && extension_present && p &&
+          rem_len) {
+        p_bcb->p_pending_data = (BT_HDR*)osi_malloc(rem_len);
+        memcpy((uint8_t*)(p_bcb->p_pending_data + 1), p, rem_len);
+        p_bcb->p_pending_data->len = rem_len;
+        p_bcb->p_pending_data->offset = 0;
+      } else {
+```
+这里是处理控制信息的部分，可以看到，过了一堆if的检查之后，会调用malloc分配一块内存，之后调用memcpy复制内存
+
+这里很明显有一块堆溢出，因为memcpy复制的大小刚好是内存分配的大小，但是复制的地址就变成p_bcb->p_pending_data+1，导致溢出sizof(BT_HDR)=8个字节
+
+我们再仔细看下要求的条件，ctrl_type == BNEP_SETUP_CONNECTION_REQUEST_MSG这个是判断控制信息的类型，我们可以控制
+
+b_bcb->con_state != BNEP_STATE_CONNECTED 这个是指BNEP的状态还没到连接状态
+
+extension_present是指有扩展，p是有控制信息，rem_len是指还未解析的包的长度
+
+因此过这个检查需要控制类型为BNEP_SETUP_CONNECTION_REQUEST_MSG，带有扩展信息的BNEP控制包
+
 ## 3. Exploit利用
 ### 3.1 环境搭建
 ### 3.2 exp利用及调试

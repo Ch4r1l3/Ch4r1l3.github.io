@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://ch4r1l3.github.io/2020/08/02/BlueBorne蓝牙漏洞复现/tt1.png">
 <meta property="og:image" content="https://ch4r1l3.github.io/2020/08/02/BlueBorne蓝牙漏洞复现/tt2.png">
 <meta property="og:image" content="https://ch4r1l3.github.io/2020/08/02/BlueBorne蓝牙漏洞复现/tt3.png">
-<meta property="og:updated_time" content="2020-08-02T15:24:11.547Z">
+<meta property="og:updated_time" content="2020-08-03T00:25:46.078Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BlueBorne蓝牙漏洞复现">
 <meta name="twitter:description" content="1. 漏洞概述1.1 漏洞介绍使用蓝牙通信协议的设备数量随着物联网时代的开启日益增多。近期，物联安全公司Armis Labs披露了一个攻击向量BlueBorne，称击者可利用一系列与蓝牙相关的安全漏洞，在一定场景下可实现对具有蓝牙功能的远端设备的控制，进而窃取受害者数据、进行中间人攻击以及在感染一个设备后蠕虫式感染其它设备，且此攻击方式无需向用户申请认证授权，具有较大的危害性。 1.2 漏洞背景蓝">
@@ -326,12 +326,24 @@
                 
               
 
-              <time title="Created: 2020-08-02 17:25:43 / Modified: 23:24:11" itemprop="dateCreated datePublished" datetime="2020-08-02T17:25:43+08:00">2020-08-02</time>
+              <time title="Created: 2020-08-02 17:25:43" itemprop="dateCreated datePublished" datetime="2020-08-02T17:25:43+08:00">2020-08-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-08-03 08:25:46" itemprop="dateModified" datetime="2020-08-03T08:25:46+08:00">2020-08-03</time>
               
             
           </span>
@@ -418,7 +430,14 @@
 <p><img src="/2020/08/02/BlueBorne蓝牙漏洞复现/tt3.png" alt=""></p>
 <p>在Android的蓝牙协议栈中，处理BNEP控制信息的部分存在漏洞，可以堆溢出8个字节</p>
 <p><a href="https://info.armis.com/rs/645-PDC-047/images/BlueBorne%20Technical%20White%20Paper_20171130.pdf" target="_blank" rel="noopener">https://info.armis.com/rs/645-PDC-047/images/BlueBorne%20Technical%20White%20Paper_20171130.pdf</a></p>
-<h4 id="源代码分析-1"><a href="#源代码分析-1" class="headerlink" title="源代码分析"></a>源代码分析</h4><h2 id="3-Exploit利用"><a href="#3-Exploit利用" class="headerlink" title="3. Exploit利用"></a>3. Exploit利用</h2><h3 id="3-1-环境搭建"><a href="#3-1-环境搭建" class="headerlink" title="3.1 环境搭建"></a>3.1 环境搭建</h3><h3 id="3-2-exp利用及调试"><a href="#3-2-exp利用及调试" class="headerlink" title="3.2 exp利用及调试"></a>3.2 exp利用及调试</h3>
+<h4 id="源代码分析-1"><a href="#源代码分析-1" class="headerlink" title="源代码分析"></a>源代码分析</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">case BNEP_FRAME_CONTROL:</span><br><span class="line">  ctrl_type = *p;</span><br><span class="line">  p = bnep_process_control_packet(p_bcb, p, &amp;rem_len, false);</span><br><span class="line">  if (ctrl_type == BNEP_SETUP_CONNECTION_REQUEST_MSG &amp;&amp;</span><br><span class="line">      p_bcb-&gt;con_state != BNEP_STATE_CONNECTED &amp;&amp; extension_present &amp;&amp; p &amp;&amp;</span><br><span class="line">      rem_len) &#123;</span><br><span class="line">    p_bcb-&gt;p_pending_data = (BT_HDR*)osi_malloc(rem_len);</span><br><span class="line">    memcpy((uint8_t*)(p_bcb-&gt;p_pending_data + 1), p, rem_len);</span><br><span class="line">    p_bcb-&gt;p_pending_data-&gt;len = rem_len;</span><br><span class="line">    p_bcb-&gt;p_pending_data-&gt;offset = 0;</span><br><span class="line">  &#125; else &#123;</span><br></pre></td></tr></table></figure>
+<p>这里是处理控制信息的部分，可以看到，过了一堆if的检查之后，会调用malloc分配一块内存，之后调用memcpy复制内存</p>
+<p>这里很明显有一块堆溢出，因为memcpy复制的大小刚好是内存分配的大小，但是复制的地址就变成p_bcb-&gt;p_pending_data+1，导致溢出sizof(BT_HDR)=8个字节</p>
+<p>我们再仔细看下要求的条件，ctrl_type == BNEP_SETUP_CONNECTION_REQUEST_MSG这个是判断控制信息的类型，我们可以控制</p>
+<p>b_bcb-&gt;con_state != BNEP_STATE_CONNECTED 这个是指BNEP的状态还没到连接状态</p>
+<p>extension_present是指有扩展，p是有控制信息，rem_len是指还未解析的包的长度</p>
+<p>因此过这个检查需要控制类型为BNEP_SETUP_CONNECTION_REQUEST_MSG，带有扩展信息的BNEP控制包</p>
+<h2 id="3-Exploit利用"><a href="#3-Exploit利用" class="headerlink" title="3. Exploit利用"></a>3. Exploit利用</h2><h3 id="3-1-环境搭建"><a href="#3-1-环境搭建" class="headerlink" title="3.1 环境搭建"></a>3.1 环境搭建</h3><h3 id="3-2-exp利用及调试"><a href="#3-2-exp利用及调试" class="headerlink" title="3.2 exp利用及调试"></a>3.2 exp利用及调试</h3>
       
     </div>
 
