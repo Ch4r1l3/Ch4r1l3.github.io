@@ -232,6 +232,7 @@ sudo pip2 install pybluez pwn
 在exp里面，会调用
 ```
 hciconfig
+```
 在exp里面，会调用下面这个命令关闭ssp
 ```
 hciconfig hci0 sspmode 0
@@ -253,10 +254,6 @@ hciconfig hci0 up
 在exp中，硬编码了几个偏移，需要动态的去修改
 
 ```
-# For Pixel 7.1.2 patch level Aug/July 2017
-LIBC_TEXT_STSTEM_OFFSET = 0x45f80 + 1 - 56 # system + 1
-LIBC_SOME_BLX_OFFSET = 0x1a420 + 1 - 608 # eventfd_write + 28 + 1
-
 # For Nexus 5X 7.1.2 patch level Aug/July 2017
 #LIBC_TEXT_STSTEM_OFFSET = 0x45f80 + 1
 #LIBC_SOME_BLX_OFFSET = 0x1a420 + 1
@@ -268,4 +265,12 @@ BLUETOOTH_BSS_SOME_VAR_OFFSET = 0x14b244
 
 需要从手机中拖出来so文件，用ida解析去找到对应的偏移，有两个还需要动态调试去找，所以手机需要先root
 
+可以使用以下命令将so文件拖出来
+```
+adb pull /system/lib/hw/bluetooth.default.so
+adb pull /system/lib/libc.so
+```
 
+然后用ida打开libc.so文件, 在函数栏找到system函数
+
+![](./BlueBorne蓝牙漏洞复现/tt4.png)
