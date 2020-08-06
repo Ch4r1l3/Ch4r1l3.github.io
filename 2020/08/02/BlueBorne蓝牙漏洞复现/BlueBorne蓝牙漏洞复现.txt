@@ -189,7 +189,6 @@ BNEP服务主要是通过L2CAP连接封装各种形式的以太网数据包，�
 
 在Android的蓝牙协议栈中，处理BNEP控制信息的部分存在漏洞，可以堆溢出8个字节
 
-https://info.armis.com/rs/645-PDC-047/images/BlueBorne%20Technical%20White%20Paper_20171130.pdf
 
 #### 源代码分析
 
@@ -530,4 +529,9 @@ def pwn(src_hci, dst, bluetooth_default_bss_base, system_addr, acl_name_addr, my
     ...
 ```
 
+### 参考资料
 
+* https://info.armis.com/rs/645-PDC-047/images/BlueBorne%20Technical%20White%20Paper_20171130.pdf
+* https://www.ms509.com/2017/12/22/android-blueborne2/
+* https://www.anquanke.com/post/id/86949
+* https://blog.csdn.net/freakishfox/article/details/78780618
